@@ -1,0 +1,14 @@
+{
+    "dependencies": [
+        {
+            "name": "Alamofire",
+            "url": "https://github.com/Alamofire/Alamofire",
+            "version": "5.6.1"
+        },
+        {
+            "name": "ViewInspector",
+            "url": "https://github.com/nalexn/ViewInspector",
+            "version": "0.9.2"
+        }
+    ]
+}
