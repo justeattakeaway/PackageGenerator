@@ -100,3 +100,11 @@ In the `PackageGenerator` scheme, enable 'Use custom working directory' and set 
 The scheme has arguments set to showcase the creation of a `Package.swift` file using some provided files.
 
 When running the default scheme you shold see a `Package.swift` file being generated in the `Modules/Example/` folder.
+
+
+# Resources
+
+This repository contains shared documents that are used for all of the open source projects provided by [Just Eat Take​away​.com](https://www.justeattakeaway.com/).
+
+- [LICENSE](./LICENSE) contains a reference copy of the Apache 2.0 license that applies all Just Eat Takeaway.com projects. **Note**: this license needs to be included directly in each project.
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) describes the Code of Conduct that applies to all contributors to our projects.
