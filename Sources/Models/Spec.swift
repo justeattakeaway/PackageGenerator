@@ -79,6 +79,25 @@ struct RemoteDependency: Decodable {
     let name: String
     let url: String
     let version: String
+    
+    enum CodingKeys: CodingKey {
+        case name
+        case url
+        case version
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.url = ""
+        self.version = ""
+    }
+     
+    init(name: String, url: String, version: String) {
+        self.name = name
+        self.url = url
+        self.version = version
+    }
 }
 
 enum TargetType: String, Decodable {

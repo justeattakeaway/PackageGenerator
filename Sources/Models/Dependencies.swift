@@ -6,8 +6,8 @@ struct Dependencies: Decodable {
     let dependencies: [Dependency]
 }
 
-struct Dependency: Decodable {
+struct Dependency: Codable {
     let name: String
-    let url: String
-    let version: String
+    var url: String
+    var version: String
 }

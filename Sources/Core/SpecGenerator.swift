@@ -8,7 +8,7 @@ final class SpecGenerator {
     let decoder = JSONDecoder()
     let dependenciesUrl: URL
     let modulesFolder: URL
-
+    
     /// The default initializer.
     ///
     /// - Parameters:
@@ -18,7 +18,7 @@ final class SpecGenerator {
         self.dependenciesUrl = dependenciesUrl
         self.modulesFolder = modulesFolder
     }
-
+    
     /// Generate a Spec model for a given module.
     ///
     /// - Parameter moduleName: The name of the module to generate a Spec for.
@@ -26,32 +26,39 @@ final class SpecGenerator {
     func makeSpec(for moduleName: ModuleName) throws -> Spec {
         try makeSpec(specUrl: specURL(for: moduleName))
     }
-
+    
     /// Generate Spec models for all module.
     ///
     /// - Returns: An array of Spec models.
     func makeSpecs() throws -> [Spec] {
-        try specURLs().map { specUrl in
-            try makeSpec(specUrl: specUrl)
-        }
+        try specURLs().map(makeSpec)
     }
     
     private func makeSpec(specUrl: URL) throws -> Spec {
-        let dependenciesVersionsData = try Data(contentsOf: dependenciesUrl)
-        let rawSpecContent = try String(contentsOf: specUrl)
+        let dependenciesData = try Data(contentsOf: dependenciesUrl)
+        let specData = try Data(contentsOf: specUrl)
         
-        let specContent: Content = try decoder
-            .decode(Dependencies.self, from: dependenciesVersionsData)
-            .dependencies
-            .reduce(rawSpecContent, replaceContentPlaceholders)
+        let partialSpec = try decoder.decode(Spec.self, from: specData)
+        let dependencies = try decoder.decode(Dependencies.self, from: dependenciesData).dependencies
         
-        return try decoder.decode(Spec.self, from: Data(specContent.utf8))
+        let mappedDependencies: [RemoteDependency] = partialSpec.remoteDependencies.compactMap { remoteDependency -> RemoteDependency? in
+            guard let dependency = dependencies.first(where: { $0.name == remoteDependency.name }) else { return nil }
+            return RemoteDependency(name: dependency.name,
+                                    url: dependency.url,
+                                    version: dependency.url)
+        }
+        
+        return Spec(name: partialSpec.name,
+                    localDependencies: partialSpec.localDependencies,
+                    remoteDependencies: mappedDependencies,
+                    products: partialSpec.products,
+                    targets: partialSpec.targets)
     }
-
+    
     private func specURL(for moduleName: ModuleName) -> URL {
         modulesFolder.appendingPathComponent("\(moduleName)/\(moduleName).json")
     }
-
+    
     private func specURLs() throws -> [URL] {
         let fm = FileManager.default
         let contentURLs = try fm.contentsOfDirectory(at: modulesFolder,
@@ -66,20 +73,10 @@ final class SpecGenerator {
         }
         .sorted()
     }
-    
-    private func replaceContentPlaceholders(partialResult: Content, dependency: Dependency) -> Content {
-        let dependencyName = dependency.name
-        let versionPlaceholder = ("\(dependencyName)_version").uppercased()
-        let urlPlaceholder = ("\(dependencyName)_url").uppercased()
-        
-        return partialResult
-            .replacingOccurrences(of: versionPlaceholder, with: dependency.version)
-            .replacingOccurrences(of: urlPlaceholder, with: dependency.url)
-    }
 }
 
 extension URL: Comparable {
-
+    
     public static func < (lhs: URL, rhs: URL) -> Bool {
         lhs.path < rhs.path
     }
