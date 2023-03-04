@@ -10,8 +10,8 @@ final class PackageGeneratorTests: XCTestCase {
             .deletingLastPathComponent()
             .appendingPathComponent("Resources")
 
-        let modulesFolderUrl = resourcesFolder
-            .appendingPathComponent("Modules")
+        let packagesFolderUrl = resourcesFolder
+            .appendingPathComponent("Packages")
 
         let dependenciesUrl = resourcesFolder
             .appendingPathComponent("TestRemoteDependencies.json")
@@ -19,14 +19,14 @@ final class PackageGeneratorTests: XCTestCase {
         let templatePath = resourcesFolder
             .appendingPathComponent("Package.stencil")
 
-        let moduleName = "TestModule"
+        let packageName = "TestPackage"
 
-        let packageUrl = modulesFolderUrl
-            .appendingPathComponent(moduleName)
+        let packageUrl = packagesFolderUrl
+            .appendingPathComponent(packageName)
             .appendingPathComponent("Package.swift")
 
-        let specGenerator = SpecGenerator(dependenciesUrl: dependenciesUrl, modulesFolder: modulesFolderUrl)
-        let spec = try specGenerator.makeSpec(for: moduleName)
+        let specGenerator = SpecGenerator(dependenciesUrl: dependenciesUrl, packagesFolder: packagesFolderUrl)
+        let spec = try specGenerator.makeSpec(for: packageName)
         let templater = Templater(templatePath: templatePath.absoluteString)
         let packageContent = try templater.renderTemplate(context: spec.makeContext())
 

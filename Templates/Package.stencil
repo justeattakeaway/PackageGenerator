@@ -63,7 +63,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "{{ module_name }}",
+    name: "{{ package_name }}",
     defaultLocalization: "en",
     platforms: [.iOS(.v14)],
     products: [

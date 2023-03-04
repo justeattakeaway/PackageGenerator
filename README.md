@@ -7,12 +7,11 @@ A tool to generate `Package.swift` files using a custom DSL allowing version ali
 
 `PackageGenerator` uses [ArgumentParser](https://github.com/apple/swift-argument-parser) and [Stencil](https://stencil.fuller.li/).
 
-The only available command is `generate-package` that requires the following aruments:
+The command `generate-package` requires the following arguments:
 
-- `modules-folder`: Path to the folder containing the modules.
+- `path`: Path to the folder containing the packages.
 - `template-path`: Path to the Stencil template.
 - `dependencies-path`: Path to the `RemoteDependencies.json` file.
-- `module-name`: The name of the module to generate the `Package.swift` for.
 
 `RemoteDependencies.json` should contain the list of remote dependencies used by your packages. E.g.
 
@@ -33,43 +32,40 @@ The only available command is `generate-package` that requires the following aru
 }
 ```
 
-Modules should be contained in respective folders inside a modules folder and provide a `<module_name>.json` spec. E.g.
+Packages should be contained in respective folders inside a packages folder and provide a `<package_name>.json` spec. E.g.
 
 ```json
 {
   "name": "Example",
   "localDependencies": [
     {
-      "name": "MyLocalFramework"
+      "name": "MyLocalFramework",
+      "path": "../MyFrameworks"
     }
   ],
   "remoteDependencies": [
     {
       "name": "Alamofire",
-      "url": "ALAMOFIRE_URL",
-      "version": "ALAMOFIRE_VERSION"
     },
     {
       "name": "ViewInspector",
-      "url": "VIEWINSPECTOR_URL",
-      "version": "VIEWINSPECTOR_VERSION"
     }
   ],
   "targets": [
     {
       "name": "Example",
+      "targetType": "target",
       "dependencies": [
         {
           "name": "Alamofire"
         }
       ],
-      "path": "Framework/Sources",
-      "hasResources": true
-    }
-  ],
-  "testTargets": [
+      "sourcesPath": "Framework/Sources",
+      "resourcesPath": "Resources"
+    },
     {
       "name": "UnitTests",
+      "targetType": "testTarget"
       "dependencies": [
         {
           "name": "Example",
@@ -79,17 +75,19 @@ Modules should be contained in respective folders inside a modules folder and pr
           "name": "ViewInspector"
         }
       ],
-      "path": "Tests/Sources",
-      "hasResources": true
+      "sourcesPath": "Tests/Sources",
+      "resourcesPath": "Resources"
     }
-  ]
+  ],
 }
 ```
 
-> Note that the fields `url` and `version` of remote dependencies should be structured like in the example above so that `PackageGenerator` can lookup the correct values in `RemoteDependencies.json`. If you prefer to specify the version for a specific package, you can set the real value in the module spec.
+> Note that `PackageGenerator` will automatically retrieve `url` & `version` values for `remoteDependencies` from the `RemoteDependencies.json` file. If you need to override those values, you can set them in the package spec.
 
 We provide a default Stencil template that `PackageGenerator` can work with.  
 
+The command `generate-packages` allows you to generate Package.swift files from a given folder of packages.
+It takes the same arguments as `generate-package` along with `packages-folder-path`. `PackageGenerator` will loop though subfolders and generate Package.swift files from JSON specs.
 
 Ideally, you want to generate a `PackageGenerator` executable and automate tasks both locally and on CI.
 
@@ -99,7 +97,7 @@ Ideally, you want to generate a `PackageGenerator` executable and automate tasks
 In the `PackageGenerator` scheme, enable 'Use custom working directory' and set the value to the folder containing the `PackageGenerator` package.
 The scheme has arguments set to showcase the creation of a `Package.swift` file using some provided files.
 
-When running the default scheme you shold see a `Package.swift` file being generated in the `Modules/Example/` folder.
+When running the default scheme you should see a `Package.swift` file being generated in the `Packages/Example/` folder.
 
 
 # Resources

@@ -2,10 +2,10 @@
 
 import Foundation
 
-public typealias ModuleName = String
+public typealias PackageName = String
 
 struct Spec: Decodable {
-    let name: ModuleName
+    let name: PackageName
     let localDependencies: [LocalDependency]
     let remoteDependencies: [RemoteDependency]
     let products: [Product]
@@ -13,7 +13,7 @@ struct Spec: Decodable {
     let localBinaryTargets: [LocalBinaryTarget]?
     let remoteBinaryTargets: [RemoteBinaryTarget]?
     
-    init(name: ModuleName,
+    init(name: PackageName,
          localDependencies: [LocalDependency],
          remoteDependencies: [RemoteDependency],
          products: [Product],
@@ -33,7 +33,7 @@ struct Spec: Decodable {
 extension Spec {
     func makeContext() -> [String: Any] {
         let values: [String: Any?] = [
-            "module_name": name,
+            "package_name": name,
             "local_dependencies": localDependencies,
             "remote_dependencies": remoteDependencies,
             "products": products,
@@ -77,8 +77,8 @@ struct LocalDependency: Decodable {
 
 struct RemoteDependency: Decodable {
     let name: String
-    let url: String
-    let version: String
+    let url: String?
+    let version: String?
     
     enum CodingKeys: CodingKey {
         case name
@@ -89,8 +89,8 @@ struct RemoteDependency: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.name = try container.decode(String.self, forKey: .name)
-        self.url = ""
-        self.version = ""
+        self.url = try container.decodeIfPresent(String.self, forKey: .url)
+        self.version = try container.decodeIfPresent(String.self, forKey: .version)
     }
      
     init(name: String, url: String, version: String) {

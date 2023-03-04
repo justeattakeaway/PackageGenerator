@@ -1,0 +1,60 @@
+{
+  "name": "Example",
+  "products": [
+    {
+      "productType": "library",
+      "name": "Example",
+      "targets": [
+        "Example"
+      ]
+    }
+  ],
+  "localDependencies": [
+    {
+      "name": "MyLocalFramework",
+      "path": "../MyFrameworks"
+    }
+  ],
+  "remoteDependencies": [
+    {
+      "name": "Alamofire"
+    },
+    {
+      "name": "ViewInspector"
+    }
+  ],
+  "targets": [
+    {
+      "name": "Example",
+      "targetType": "target",
+      "dependencies": [
+        {
+          "name": "Alamofire"
+        }
+      ],
+      "sourcesPath": "Framework/Sources",
+      "resourcesPath": "Resources"
+    },
+    {
+      "name": "UnitTests",
+      "targetType": "testTarget",
+      "dependencies": [
+        {
+          "name": "Example",
+          "isTarget": true
+        },
+        {
+          "name": "ViewInspector"
+        }
+      ],
+      "sourcesPath": "Tests/Sources",
+      "resourcesPath": "Resources"
+    }
+  ],
+  "localBinaryTargets": [
+    {
+      "name": "GoogleMaps",
+      "path": "../../vendor/GoogleMaps-7.1.0/GoogleMaps.xcframework"
+    }
+  ]
+}
