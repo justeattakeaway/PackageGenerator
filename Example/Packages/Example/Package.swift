@@ -8,7 +8,10 @@ import PackageDescription
 let package = Package(
     name: "Example",
     defaultLocalization: "en",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v15),
+        .macOS(.v13),
+    ],
     products: [
         .library(
             name: "Example",

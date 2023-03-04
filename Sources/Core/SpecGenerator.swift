@@ -49,6 +49,7 @@ final class SpecGenerator {
         }
         
         return Spec(name: partialSpec.name,
+                    platforms: partialSpec.platforms,
                     localDependencies: partialSpec.localDependencies,
                     remoteDependencies: mappedDependencies,
                     products: partialSpec.products,

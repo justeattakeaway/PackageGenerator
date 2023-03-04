@@ -65,7 +65,15 @@ import PackageDescription
 let package = Package(
     name: "{{ package_name }}",
     defaultLocalization: "en",
-    platforms: [.iOS(.v14)],
+{% if platforms %}
+    platforms: [
+    {% for platform in platforms %}
+        {{ platform.name }},
+    {% endfor %}
+    ],
+{% else %}
+    platforms: [.iOS(.v15)],
+{% endif %}
     products: [
 {% for product in products %}
     {% call addProduct product %}

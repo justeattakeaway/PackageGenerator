@@ -1,5 +1,13 @@
 {
   "name": "Example",
+  "platforms": [
+    {
+      "name": ".iOS(.v15)"
+    },
+    {
+      "name": ".macOS(.v13)"
+    }
+  ],
   "products": [
     {
       "productType": "library",
