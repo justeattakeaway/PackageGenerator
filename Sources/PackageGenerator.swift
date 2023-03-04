@@ -7,6 +7,7 @@ import ArgumentParser
 struct PackageGenerator: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         subcommands: [
-            GeneratePackage.self
+            GeneratePackage.self,
+            GeneratePackages.self
         ])
 }
