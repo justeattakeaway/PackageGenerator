@@ -6,7 +6,7 @@ public typealias PackageName = String
 
 struct Spec: Decodable {
     let name: PackageName
-    let platforms: [Platform]?
+    let platforms: [String]?
     let localDependencies: [LocalDependency]
     let remoteDependencies: [RemoteDependency]
     let products: [Product]
@@ -15,7 +15,7 @@ struct Spec: Decodable {
     let remoteBinaryTargets: [RemoteBinaryTarget]?
     
     init(name: PackageName,
-         platforms: [Platform]?,
+         platforms: [String]?,
          localDependencies: [LocalDependency],
          remoteDependencies: [RemoteDependency],
          products: [Product],
@@ -47,10 +47,6 @@ extension Spec {
         ]
         return values.compactMapValues { $0 }
     }
-}
-
-struct Platform: Decodable {
-    let name: String
 }
 
 struct Product: Decodable {
