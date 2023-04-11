@@ -23,6 +23,13 @@
             {% endfor %}
             ],
             path: "{{ target.sourcesPath }}",
+            {% if target.exclude %}
+            exclude: [
+            {% for excluded in target.exclude %}
+                "{{ excluded }}",
+            {% endfor %}
+            ],
+            {% endif %}
             {% if target.resourcesPath %}
             resources: [
                 .process("{{ target.resourcesPath }}")
@@ -68,7 +75,7 @@ let package = Package(
 {% if platforms %}
     platforms: [
     {% for platform in platforms %}
-        {{ platform.name }},
+        {{ platform }},
     {% endfor %}
     ],
 {% else %}
