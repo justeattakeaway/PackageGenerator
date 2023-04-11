@@ -108,6 +108,7 @@ enum TargetType: String, Decodable {
     case target
     case testTarget
     case executableTarget
+    case plugin
 }
 
 struct Target: Decodable {
