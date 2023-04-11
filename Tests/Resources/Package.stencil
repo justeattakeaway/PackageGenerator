@@ -1,4 +1,4 @@
-{% macro addProduct product %}
+{% macro addProduct product %}        
         .{{ product.productType }}(
             name: "{{ product.name }}",
             targets: {{ product.targets }}
@@ -23,6 +23,13 @@
             {% endfor %}
             ],
             path: "{{ target.sourcesPath }}",
+            {% if target.exclude %}
+            exclude: [
+            {% for excluded in target.exclude %}
+                "{{ excluded }}",
+            {% endfor %}
+            ],
+            {% endif %}
             {% if target.resourcesPath %}
             resources: [
                 .process("{{ target.resourcesPath }}")
@@ -65,7 +72,15 @@ import PackageDescription
 let package = Package(
     name: "{{ package_name }}",
     defaultLocalization: "en",
+{% if platforms %}
+    platforms: [
+    {% for platform in platforms %}
+        {{ platform }},
+    {% endfor %}
+    ],
+{% else %}
     platforms: [.iOS(.v15)],
+{% endif %}
     products: [
 {% for product in products %}
     {% call addProduct product %}
