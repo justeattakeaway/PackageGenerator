@@ -37,23 +37,33 @@ Packages should be contained in respective folders inside a packages folder and 
 ```json
 {
   "name": "Example",
+  "products": [
+    {
+      "name": "Example",
+      "productType": "library",
+      "targets": [
+        "ExampleTarget"
+      ]
+    }
+  ],
   "localDependencies": [
     {
-      "name": "MyLocalFramework",
-      "path": "../MyFrameworks"
+      "name": "ExampleLocalDependency",
+      "path": "../LocalDependencies"
     }
   ],
   "remoteDependencies": [
     {
-      "name": "Alamofire",
+      "name": "Alamofire"
     },
     {
       "name": "ViewInspector",
-    }
+      "version": "1.2.3"
+    },
   ],
   "targets": [
     {
-      "name": "Example",
+      "name": "ExampleTarget",
       "targetType": "target",
       "dependencies": [
         {
@@ -64,11 +74,11 @@ Packages should be contained in respective folders inside a packages folder and 
       "resourcesPath": "Resources"
     },
     {
-      "name": "UnitTests",
-      "targetType": "testTarget"
+      "name": "ExampleTargetTests",
+      "targetType": "testTarget",
       "dependencies": [
         {
-          "name": "Example",
+          "name": "ExampleTarget",
           "isTarget": true
         },
         {
@@ -78,7 +88,7 @@ Packages should be contained in respective folders inside a packages folder and 
       "sourcesPath": "Tests/Sources",
       "resourcesPath": "Resources"
     }
-  ],
+  ]
 }
 ```
 
