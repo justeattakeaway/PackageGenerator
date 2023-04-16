@@ -36,6 +36,7 @@ let package = Package(
             name: "Example",
             dependencies: [
                 .product(name: "Alamofire", package: "Alamofire"),
+                .target(name: "GoogleMaps"),
             ],
             path: "Framework/Sources",
             resources: [
@@ -49,6 +50,7 @@ let package = Package(
             dependencies: [
                 .byName(name: "Example"),
                 .product(name: "ViewInspector", package: "ViewInspector"),
+                .target(name: "GoogleMaps"),
             ],
             path: "Tests/Sources",
             resources: [
@@ -56,6 +58,10 @@ let package = Package(
             ],
             plugins: [
             ]
+        ),
+        .binaryTarget(
+            name: "GoogleMaps",
+            path: "../../vendor/GoogleMaps-7.1.0/GoogleMaps.xcframework"
         ),
     ]
 )

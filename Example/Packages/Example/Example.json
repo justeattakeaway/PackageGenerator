@@ -1,12 +1,8 @@
 {
   "name": "Example",
   "platforms": [
-    {
-      "name": ".iOS(.v15)"
-    },
-    {
-      "name": ".macOS(.v13)"
-    }
+    ".iOS(.v15)",
+    ".macOS(.v13)"
   ],
   "products": [
     {
