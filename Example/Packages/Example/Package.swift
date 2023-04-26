@@ -23,20 +23,20 @@ let package = Package(
             path: "../MyFrameworks"
         ),
         .package(
-            url: "https://github.com/Alamofire/Alamofire",
-            exact: "5.6.1"
+            url: "https://github.com/DependencyA",
+            exact: "1.0.0"
         ),
         .package(
-            url: "https://github.com/nalexn/ViewInspector",
-            exact: "0.9.2"
+            url: "https://github.com/DependencyB",
+            exact: "2.0.0"
         ),
     ],
     targets: [
         .target(
             name: "Example",
             dependencies: [
-                .product(name: "Alamofire", package: "Alamofire"),
-                .target(name: "GoogleMaps"),
+                .product(name: "RemoteDependencyA", package: "RemoteDependencyA"),
+                .target(name: "LocalXCFramework"),
             ],
             path: "Framework/Sources",
             resources: [
@@ -49,8 +49,8 @@ let package = Package(
             name: "UnitTests",
             dependencies: [
                 .byName(name: "Example"),
-                .product(name: "ViewInspector", package: "ViewInspector"),
-                .target(name: "GoogleMaps"),
+                .product(name: "RemoteDependencyB", package: "RemoteDependencyB"),
+                .target(name: "LocalXCFramework"),
             ],
             path: "Tests/Sources",
             resources: [
@@ -60,8 +60,8 @@ let package = Package(
             ]
         ),
         .binaryTarget(
-            name: "GoogleMaps",
-            path: "../../vendor/GoogleMaps-7.1.0/GoogleMaps.xcframework"
+            name: "LocalXCFramework",
+            path: "../LocalXCFramework.xcframework"
         ),
     ]
 )

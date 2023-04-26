@@ -21,10 +21,10 @@
   ],
   "remoteDependencies": [
     {
-      "name": "Alamofire"
+      "name": "RemoteDependencyA"
     },
     {
-      "name": "ViewInspector"
+      "name": "RemoteDependencyB"
     }
   ],
   "targets": [
@@ -33,7 +33,7 @@
       "targetType": "target",
       "dependencies": [
         {
-          "name": "Alamofire"
+          "name": "RemoteDependencyA"
         }
       ],
       "sourcesPath": "Framework/Sources",
@@ -48,7 +48,7 @@
           "isTarget": true
         },
         {
-          "name": "ViewInspector"
+          "name": "RemoteDependencyB"
         }
       ],
       "sourcesPath": "Tests/Sources",
@@ -57,8 +57,8 @@
   ],
   "localBinaryTargets": [
     {
-      "name": "GoogleMaps",
-      "path": "../../vendor/GoogleMaps-7.1.0/GoogleMaps.xcframework"
+      "name": "LocalXCFramework",
+      "path": "../LocalXCFramework.xcframework"
     }
   ]
 }

@@ -1,14 +1,14 @@
 {
     "dependencies": [
         {
-            "name": "Alamofire",
-            "url": "https://github.com/Alamofire/Alamofire",
-            "version": "5.6.1"
+            "name": "RemoteDependencyA",
+            "url": "https://github.com/DependencyA",
+            "version": "1.0.0"
         },
         {
-            "name": "ViewInspector",
-            "url": "https://github.com/nalexn/ViewInspector",
-            "version": "0.9.2"
+            "name": "RemoteDependencyB",
+            "url": "https://github.com/DependencyB",
+            "version": "2.0.0"
         }
     ]
 }
