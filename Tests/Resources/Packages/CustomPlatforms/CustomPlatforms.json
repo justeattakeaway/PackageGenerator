@@ -1,0 +1,64 @@
+{
+  "name": "CustomPlatforms",
+  "platforms": [
+    ".iOS(.v16)", 
+    ".macOS(.v12)"
+  ],
+  "products": [
+    {
+      "name": "CustomPlatforms",
+      "productType": "library",
+      "targets": [
+        "TargetA"
+      ]
+    }
+  ],
+  "localDependencies": [
+    {
+      "name": "LocalDependencyA",
+      "path": "../LocalDependencies"
+    }
+  ],
+  "remoteDependencies": [
+    {
+      "name": "RemoteDependencyA"
+    },
+    {
+      "name": "RemoteDependencyB"
+    }
+  ],
+  "targets": [
+    {
+      "name": "TargetA",
+      "targetType": "target",
+      "dependencies": [
+        {
+          "name": "LocalDependencyA"
+        },
+        {
+          "name": "RemoteDependencyA"
+        },
+        {
+          "name": "RemoteDependencyB"
+        }
+      ],
+      "sourcesPath": "Framework/Sources",
+      "resourcesPath": "Resources"
+    },
+    {
+      "name": "TargetATests",
+      "targetType": "testTarget",
+      "dependencies": [
+        {
+          "name": "TargetA",
+          "isTarget": true
+        },
+        {
+          "name": "RemoteDependencyB"
+        }
+      ],
+      "sourcesPath": "Tests/Sources",
+      "resourcesPath": "Resources"
+    }
+  ]
+}

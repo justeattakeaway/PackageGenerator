@@ -5,28 +5,67 @@ import XCTest
 
 final class PackageGeneratorTests: XCTestCase {
 
-    func test_packageGeneration() throws {
-        let resourcesFolder = URL(fileURLWithPath: #file)
-            .deletingLastPathComponent()
-            .appendingPathComponent("Resources")
+    enum PackageType: String {
+        case singleProduct = "SingleProduct"
+        case multipleProducts = "MultipleProducts"
+        case customPlatforms = "CustomPlatforms"
+        case dependencyOverride = "DependencyOverride"
+        case complexTargets = "ComplexTargets"
+        case executableProduct = "ExecutableProduct"
+        case plugins = "PluginProduct"
+    }
+    
+    let resourcesFolder = URL(fileURLWithPath: #file)
+        .deletingLastPathComponent()
+        .appendingPathComponent("Resources")
+    
+    lazy var packagesFolderUrl = resourcesFolder.appendingPathComponent("Packages")
+    lazy var dependenciesUrl = resourcesFolder.appendingPathComponent("TestRemoteDependencies.json")
+    lazy var templatePath = resourcesFolder.appendingPathComponent("Package.stencil")
+    
+    func test_SingleProduct() throws {
+        try assertPackage(for: .singleProduct)
+    }
+    
+    func test_MultipleProducts() throws {
+        try assertPackage(for: .multipleProducts)
+    }
+    
+    func test_customPlatforms() throws {
+        try assertPackage(for: .customPlatforms)
+    }
 
-        let modulesFolderUrl = resourcesFolder
-            .appendingPathComponent("Modules")
+    func test_DependencyVersionOverride() throws {
+        try assertPackage(for: .dependencyOverride)
+    }
 
-        let dependenciesUrl = resourcesFolder
-            .appendingPathComponent("TestRemoteDependencies.json")
+    func test_complexTargets() throws {
+        try assertPackage(for: .complexTargets)
+    }
 
-        let templatePath = resourcesFolder
-            .appendingPathComponent("Package.stencil")
+    func test_executableProduct() throws {
+        try assertPackage(for: .executableProduct)
+    }
 
-        let moduleName = "TestModule"
-
-        let packageUrl = modulesFolderUrl
-            .appendingPathComponent(moduleName)
-            .appendingPathComponent("Package.swift")
-
-        let specGenerator = SpecGenerator(dependenciesUrl: dependenciesUrl, modulesFolder: modulesFolderUrl)
-        let spec = try specGenerator.makeSpec(for: moduleName)
+    func test_pluginProduct() throws {
+        try assertPackage(for: .plugins)
+    }
+    
+    private func assertPackage(for packageType: PackageType) throws {
+        let packageSpecUrl = resourcesFolder
+            .appendingPathComponent("Packages")
+            .appendingPathComponent(packageType.rawValue)
+            .appendingPathComponent(packageType.rawValue)
+            .appendingPathExtension("json")
+        
+        let packageUrl = resourcesFolder
+            .appendingPathComponent("Packages")
+            .appendingPathComponent(packageType.rawValue)
+            .appendingPathComponent("\(packageType.rawValue)Package")
+            .appendingPathExtension("swift")
+        
+        let specGenerator = SpecGenerator(dependenciesUrl: dependenciesUrl, packagesFolder: packagesFolderUrl)
+        let spec = try specGenerator.makeSpec(for: packageType.rawValue, specUrl: packageSpecUrl)
         let templater = Templater(templatePath: templatePath.absoluteString)
         let packageContent = try templater.renderTemplate(context: spec.makeContext())
 

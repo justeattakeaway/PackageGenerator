@@ -1,0 +1,79 @@
+{
+  "name": "ComplexTarget",
+  "products": [
+    {
+      "name": "ComplexTarget",
+      "productType": "library",
+      "targets": [
+        "TargetA",
+        "LocalBinaryTarget"
+      ]
+    }
+  ],
+  "localDependencies": [
+    {
+      "name": "LocalDependencyA",
+      "path": "../LocalDependencies"
+    }
+  ],
+  "remoteDependencies": [
+    {
+      "name": "RemoteDependencyA"
+    },
+    {
+      "name": "RemoteDependencyB"
+    }
+  ],
+  "targets": [
+    {
+      "name": "TargetA",
+      "targetType": "target",
+      "dependencies": [
+        {
+          "name": "LocalDependencyA"
+        },
+        {
+          "name": "RemoteDependencyA"
+        },
+        {
+          "name": "RemoteDependencyB"
+        }
+      ],
+      "exclude": [
+        "/path1",
+        "/path1/path2"
+      ],
+      "sourcesPath": "Framework/Sources",
+      "resourcesPath": "Resources"
+    },
+    {
+      "name": "TargetATests",
+      "targetType": "testTarget",
+      "dependencies": [
+        {
+          "name": "TargetA",
+          "isTarget": true
+        },
+        {
+          "name": "RemoteDependencyB"
+        }
+      ],
+      "swiftSettings": [".define(\"setting\")", ".unsafeFlags([\"flag\"])"],
+      "sourcesPath": "Tests/Sources",
+      "resourcesPath": "Resources"
+    }
+  ],
+  "localBinaryTargets": [
+    {
+      "name": "LocalBinaryTarget",
+      "path": "path/LocalBinaryTarget"
+    }
+  ],
+  "remoteBinaryTargets": [
+    {
+      "name": "RemoteBinaryTarget",
+      "url": "https://github.com/RemoteBinaryTarget.zip",
+      "checksum": "12345"
+    }
+  ]
+}
