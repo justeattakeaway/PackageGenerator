@@ -99,6 +99,8 @@ let package = Package(
             exact: "{{ remote_dependency.version }}"
             {% elif remote_dependency.revision %}
             revision: "{{ remote_dependency.revision }}"
+            {% elif remote_dependency.branch %}
+            branch: "{{ remote_dependency.branch }}"
             {% endif %}
         ),
 {% endfor %}

@@ -7,6 +7,7 @@ final class PackageGeneratorTests: XCTestCase {
 
     enum PackageType: String {
         case revisionProduct = "RevisionProduct"
+        case branchProduct = "BranchProduct"
         case singleProduct = "SingleProduct"
         case multipleProducts = "MultipleProducts"
         case customPlatforms = "CustomPlatforms"
@@ -30,6 +31,10 @@ final class PackageGeneratorTests: XCTestCase {
 
     func test_RevisionProduct() throws {
         try assertPackage(for: .revisionProduct)
+    }
+
+    func test_BranchProduct() throws {
+        try assertPackage(for: .branchProduct)
     }
 
     func test_MultipleProducts() throws {

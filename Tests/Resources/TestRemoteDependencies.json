@@ -14,6 +14,11 @@
             "name": "RemoteDependencyC",
             "url": "https://github.com/DependencyC",
             "revision": "abcde1235kjh"
+        },
+        {
+            "name": "RemoteDependencyD",
+            "url": "https://github.com/DependencyD",
+            "branch": "master"
         }
     ]
 }

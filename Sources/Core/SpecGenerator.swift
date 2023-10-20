@@ -46,7 +46,8 @@ final class SpecGenerator {
             return RemoteDependency(name: dependency.name,
                                     url: remoteDependency.url ?? dependency.url,
                                     version: remoteDependency.version ?? dependency.version,
-                                    revision: remoteDependency.revision ?? dependency.revision)
+                                    revision: remoteDependency.revision ?? dependency.revision,
+                                    branch: remoteDependency.branch ?? dependency.branch)
         }
         
         return Spec(name: partialSpec.name,
