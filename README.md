@@ -27,6 +27,21 @@ The command `generate-package` requires the following arguments:
             "name": "ViewInspector",
             "url": "https://github.com/nalexn/ViewInspector",
             "version": "0.9.2"
+        },
+        {
+            "name": "ViewInspector",
+            "url": "https://github.com/nalexn/ViewInspector",
+            "version": "0.9.2"
+        },
+        {
+            "name": "SnapshotTesting",
+            "url": "https://github.com/pointfreeco/swift-snapshot-testing",
+            "branch": "master"
+        },
+        {
+            "name": "Fastlane",
+            "url": "https://github.com/fastlane/fastlane.git",
+            "revision": "2c4f29fe161c5998e30000f96d23384fd0eebe90"
         }
     ]
 }
@@ -60,6 +75,12 @@ Packages should be contained in respective folders inside a packages folder and 
       "name": "ViewInspector",
       "version": "1.2.3"
     },
+    {
+      "name": "Fastlane"
+    },
+    {
+      "name": "SnapshotTesting"
+    },
   ],
   "targets": [
     {
@@ -68,6 +89,9 @@ Packages should be contained in respective folders inside a packages folder and 
       "dependencies": [
         {
           "name": "Alamofire"
+        },
+        {
+          "name": "Fastlane"
         }
       ],
       "sourcesPath": "Framework/Sources",
@@ -83,6 +107,9 @@ Packages should be contained in respective folders inside a packages folder and 
         },
         {
           "name": "ViewInspector"
+        },
+        {
+          "name": "SnapshotTesting"
         }
       ],
       "sourcesPath": "Tests/Sources",
@@ -92,7 +119,7 @@ Packages should be contained in respective folders inside a packages folder and 
 }
 ```
 
-> Note that `PackageGenerator` will automatically retrieve `url` & `version` values for `remoteDependencies` from the `RemoteDependencies.json` file. If you need to override those values, you can set them in the package spec.
+> Note that `PackageGenerator` will automatically retrieve `url` &  ( `version` || `branch` || `revision` ) values for `remoteDependencies` from the `RemoteDependencies.json` file. If you need to override those values, you can set them in the package spec.
 
 We provide a default Stencil template that `PackageGenerator` can work with.  
 
