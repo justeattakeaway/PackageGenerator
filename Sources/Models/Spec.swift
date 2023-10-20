@@ -83,11 +83,13 @@ struct RemoteDependency: Decodable {
     let name: String
     let url: String?
     let version: String?
-    
+    let revision: String?
+
     enum CodingKeys: CodingKey {
         case name
         case url
         case version
+        case revision
     }
     
     init(from decoder: Decoder) throws {
@@ -95,12 +97,14 @@ struct RemoteDependency: Decodable {
         self.name = try container.decode(String.self, forKey: .name)
         self.url = try container.decodeIfPresent(String.self, forKey: .url)
         self.version = try container.decodeIfPresent(String.self, forKey: .version)
+        self.revision = try container.decodeIfPresent(String.self, forKey: .revision)
     }
      
-    init(name: String, url: String, version: String) {
+    init(name: String, url: String, version: String?, revision: String?) {
         self.name = name
         self.url = url
         self.version = version
+        self.revision = revision
     }
 }
 

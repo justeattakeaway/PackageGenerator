@@ -9,5 +9,6 @@ struct Dependencies: Decodable {
 struct Dependency: Decodable {
     let name: String
     let url: String
-    let version: String
+    let version: String?
+    let revision: String?
 }

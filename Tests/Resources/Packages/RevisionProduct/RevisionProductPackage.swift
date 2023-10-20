@@ -6,21 +6,18 @@
 import PackageDescription
 
 let package = Package(
-    name: "Example",
+    name: "RevisionProduct",
     defaultLocalization: "en",
-    platforms: [
-        .iOS(.v15),
-        .macOS(.v13),
-    ],
+    platforms: [.iOS(.v15)],
     products: [
         .library(
-            name: "Example",
-            targets: ["Example"]
+            name: "RevisionProduct",
+            targets: ["TargetA"]
         ),
     ],
     dependencies: [
         .package(
-            path: "../MyFrameworks"
+            path: "../LocalDependencies"
         ),
         .package(
             url: "https://github.com/DependencyA",
@@ -37,10 +34,12 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Example",
+            name: "TargetA",
             dependencies: [
+                .product(name: "LocalDependencyA", package: "LocalDependencyA"),
                 .product(name: "RemoteDependencyA", package: "RemoteDependencyA"),
-                .target(name: "LocalXCFramework"),
+                .product(name: "RemoteDependencyB", package: "RemoteDependencyB"),
+                .product(name: "RemoteDependencyC", package: "RemoteDependencyC"),
             ],
             path: "Framework/Sources",
             resources: [
@@ -50,11 +49,10 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "UnitTests",
+            name: "TargetATests",
             dependencies: [
-                .byName(name: "Example"),
+                .byName(name: "TargetA"),
                 .product(name: "RemoteDependencyB", package: "RemoteDependencyB"),
-                .target(name: "LocalXCFramework"),
             ],
             path: "Tests/Sources",
             resources: [
@@ -62,10 +60,6 @@ let package = Package(
             ],
             plugins: [
             ]
-        ),
-        .binaryTarget(
-            name: "LocalXCFramework",
-            path: "../LocalXCFramework.xcframework"
         ),
     ]
 )
