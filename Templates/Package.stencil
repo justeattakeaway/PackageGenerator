@@ -95,7 +95,13 @@ let package = Package(
 {% for remote_dependency in remote_dependencies %}
         .package(
             url: "{{ remote_dependency.url }}",
+            {% if remote_dependency.version %}
             exact: "{{ remote_dependency.version }}"
+            {% elif remote_dependency.revision %}
+            revision: "{{ remote_dependency.revision }}"
+            {% elif remote_dependency.branch %}
+            branch: "{{ remote_dependency.branch }}"
+            {% endif %}
         ),
 {% endfor %}
     ],

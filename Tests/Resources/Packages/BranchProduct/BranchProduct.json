@@ -1,22 +1,18 @@
 {
-  "name": "Example",
-  "platforms": [
-    ".iOS(.v15)",
-    ".macOS(.v13)"
-  ],
+  "name": "BranchProduct",
   "products": [
     {
+      "name": "BranchProduct",
       "productType": "library",
-      "name": "Example",
       "targets": [
-        "Example"
+        "TargetA"
       ]
     }
   ],
   "localDependencies": [
     {
-      "name": "MyLocalFramework",
-      "path": "../MyFrameworks"
+      "name": "LocalDependencyA",
+      "path": "../LocalDependencies"
     }
   ],
   "remoteDependencies": [
@@ -27,27 +23,36 @@
       "name": "RemoteDependencyB"
     },
     {
-      "name": "RemoteDependencyC"
+      "name": "RemoteDependencyD"
     }
   ],
   "targets": [
     {
-      "name": "Example",
+      "name": "TargetA",
       "targetType": "target",
       "dependencies": [
         {
+          "name": "LocalDependencyA"
+        },
+        {
           "name": "RemoteDependencyA"
+        },
+        {
+          "name": "RemoteDependencyB"
+        },
+        {
+          "name": "RemoteDependencyD"
         }
       ],
       "sourcesPath": "Framework/Sources",
       "resourcesPath": "Resources"
     },
     {
-      "name": "UnitTests",
+      "name": "TargetATests",
       "targetType": "testTarget",
       "dependencies": [
         {
-          "name": "Example",
+          "name": "TargetA",
           "isTarget": true
         },
         {
@@ -56,12 +61,6 @@
       ],
       "sourcesPath": "Tests/Sources",
       "resourcesPath": "Resources"
-    }
-  ],
-  "localBinaryTargets": [
-    {
-      "name": "LocalXCFramework",
-      "path": "../LocalXCFramework.xcframework"
     }
   ]
 }

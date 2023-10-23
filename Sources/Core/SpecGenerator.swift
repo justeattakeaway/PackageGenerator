@@ -45,7 +45,9 @@ final class SpecGenerator {
             guard let dependency = dependencies.first(where: { $0.name == remoteDependency.name }) else { return nil }
             return RemoteDependency(name: dependency.name,
                                     url: remoteDependency.url ?? dependency.url,
-                                    version: remoteDependency.version ?? dependency.version)
+                                    version: remoteDependency.version ?? dependency.version,
+                                    revision: remoteDependency.revision ?? dependency.revision,
+                                    branch: remoteDependency.branch ?? dependency.branch)
         }
         
         return Spec(name: partialSpec.name,

@@ -6,21 +6,18 @@
 import PackageDescription
 
 let package = Package(
-    name: "Example",
+    name: "BranchProduct",
     defaultLocalization: "en",
-    platforms: [
-        .iOS(.v15),
-        .macOS(.v13),
-    ],
+    platforms: [.iOS(.v15)],
     products: [
         .library(
-            name: "Example",
-            targets: ["Example"]
+            name: "BranchProduct",
+            targets: ["TargetA"]
         ),
     ],
     dependencies: [
         .package(
-            path: "../MyFrameworks"
+            path: "../LocalDependencies"
         ),
         .package(
             url: "https://github.com/DependencyA",
@@ -31,16 +28,18 @@ let package = Package(
             exact: "2.0.0"
         ),
         .package(
-            url: "https://github.com/DependencyC",
-            revision: "abcde1235kjh"
+            url: "https://github.com/DependencyD",
+            branch: "master"
         ),
     ],
     targets: [
         .target(
-            name: "Example",
+            name: "TargetA",
             dependencies: [
+                .product(name: "LocalDependencyA", package: "LocalDependencyA"),
                 .product(name: "RemoteDependencyA", package: "RemoteDependencyA"),
-                .target(name: "LocalXCFramework"),
+                .product(name: "RemoteDependencyB", package: "RemoteDependencyB"),
+                .product(name: "RemoteDependencyD", package: "RemoteDependencyD"),
             ],
             path: "Framework/Sources",
             resources: [
@@ -50,11 +49,10 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "UnitTests",
+            name: "TargetATests",
             dependencies: [
-                .byName(name: "Example"),
+                .byName(name: "TargetA"),
                 .product(name: "RemoteDependencyB", package: "RemoteDependencyB"),
-                .target(name: "LocalXCFramework"),
             ],
             path: "Tests/Sources",
             resources: [
@@ -62,10 +60,6 @@ let package = Package(
             ],
             plugins: [
             ]
-        ),
-        .binaryTarget(
-            name: "LocalXCFramework",
-            path: "../LocalXCFramework.xcframework"
         ),
     ]
 )
