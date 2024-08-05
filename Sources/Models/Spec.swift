@@ -13,6 +13,7 @@ struct Spec: Decodable {
     let targets: [Target]
     let localBinaryTargets: [LocalBinaryTarget]?
     let remoteBinaryTargets: [RemoteBinaryTarget]?
+    let swiftLanguageVersions: [SwiftLanguageVersion]?
     
     init(name: PackageName,
          platforms: [String]?,
@@ -21,7 +22,8 @@ struct Spec: Decodable {
          products: [Product],
          targets: [Target],
          localBinaryTargets: [LocalBinaryTarget]? = nil,
-         remoteBinaryTargets: [RemoteBinaryTarget]? = nil) {
+         remoteBinaryTargets: [RemoteBinaryTarget]? = nil,
+         swiftLanguageVersions: [SwiftLanguageVersion]? = nil) {
         self.name = name
         self.platforms = platforms
         self.localDependencies = localDependencies
@@ -30,6 +32,7 @@ struct Spec: Decodable {
         self.targets = targets
         self.localBinaryTargets = localBinaryTargets
         self.remoteBinaryTargets = remoteBinaryTargets
+        self.swiftLanguageVersions = swiftLanguageVersions
     }
 }
 
@@ -43,7 +46,8 @@ extension Spec {
             "products": products,
             "targets": targets,
             "local_binary_targets": localBinaryTargets,
-            "remote_binary_targets": remoteBinaryTargets
+            "remote_binary_targets": remoteBinaryTargets,
+            "swift_versions": swiftLanguageVersions
         ]
         return values.compactMapValues { $0 }
     }
@@ -189,4 +193,9 @@ struct RemoteBinaryTarget: Decodable {
     let name: String
     let url: String
     let checksum: String
+}
+
+struct SwiftLanguageVersion: Decodable {
+    let version: String
+    let isToolsVersion: Bool?
 }
