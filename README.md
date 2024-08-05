@@ -52,6 +52,15 @@ Packages should be contained in respective folders inside a packages folder and 
 ```json
 {
   "name": "Example",
+  "swiftLanguageVersions": [
+      {
+          "version": "5.10",
+          "isToolsVersion": true
+      },
+      {
+          "version": "6.0"
+      }
+  ],
   "products": [
     {
       "name": "Example",
