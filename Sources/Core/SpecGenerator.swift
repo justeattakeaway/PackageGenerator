@@ -57,7 +57,9 @@ final class SpecGenerator {
                     products: partialSpec.products,
                     targets: partialSpec.targets,
                     localBinaryTargets: partialSpec.localBinaryTargets,
-                    remoteBinaryTargets: partialSpec.remoteBinaryTargets)
+                    remoteBinaryTargets: partialSpec.remoteBinaryTargets,
+                    swiftToolsVersion: partialSpec.swiftToolsVersion,
+                    swiftLanguageVersions: partialSpec.swiftLanguageVersions)
     }
     
     private func specURL(for packageName: PackageName) -> URL {

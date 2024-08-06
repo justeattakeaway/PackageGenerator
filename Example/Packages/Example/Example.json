@@ -4,6 +4,11 @@
     ".iOS(.v15)",
     ".macOS(.v13)"
   ],
+  "swiftToolsVersion": "5.10",
+  "swiftLanguageVersions": [
+    "5.10",
+    "6.0"
+  ],
   "products": [
     {
       "productType": "library",
