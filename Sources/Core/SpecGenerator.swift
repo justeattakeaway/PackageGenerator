@@ -58,6 +58,7 @@ final class SpecGenerator {
                     targets: partialSpec.targets,
                     localBinaryTargets: partialSpec.localBinaryTargets,
                     remoteBinaryTargets: partialSpec.remoteBinaryTargets,
+                    swiftToolsVersion: partialSpec.swiftToolsVersion,
                     swiftLanguageVersions: partialSpec.swiftLanguageVersions)
     }
     

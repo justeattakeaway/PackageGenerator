@@ -62,12 +62,8 @@
             checksum: "{{ target.checksum }}"
         ),
 {% endmacro %}
-{% if swift_versions %}
-    {% for swift_version in swift_versions %}
-        {% if swift_version.isToolsVersion %}
-// swift-tools-version: {{ swift_version.version }}
-        {% endif %}
-    {% endfor %}
+{% if swift_tools_version %}
+// swift-tools-version: {{ swift_tools_version }}
 {% else %}
 // swift-tools-version: 5.7
 {% endif %}
@@ -127,7 +123,7 @@ let package = Package(
     ],
     swiftLanguageVersions: [
     {% for swift_version in swift_versions %}
-        .version("{{ swift_version.version }}"),
+        .version("{{ swift_version }}"),
     {% endfor %}
     ]
 {% else %}
