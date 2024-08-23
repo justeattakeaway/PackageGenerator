@@ -1,17 +1,15 @@
 # PackageGenerator
 
-A tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages.
+A CLI tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages.
 
 
 ## Usage
 
-`PackageGenerator` uses [ArgumentParser](https://github.com/apple/swift-argument-parser) and [Stencil](https://stencil.fuller.li/).
+`PackageGenerator` uses [ArgumentParser](https://github.com/apple/swift-argument-parser) and [Stencil](https://stencil.fuller.li/). The tool provides a single `generate-package` command requiring the following options:
 
-The command `generate-package` requires the following arguments:
-
-- `spec`: Path to a package spec file (supported formats: json, yaml)
-- `dependencies`: Path to a dependencies file (supported formats: json, yaml)
-- `template`: Path to a template file (supported formats: stencil)
+- `--spec`: Path to a package spec file (supported formats: json, yaml)
+- `--dependencies`: Path to a dependencies file (supported formats: json, yaml)
+- `--template`: Path to a template file (supported formats: stencil)
 
 Here are spec examples in both json and yaml:
 
@@ -162,7 +160,9 @@ dependencies:
 
 We provide a default Stencil template we recommend using.  
 
-Ideally, you want to generate a `PackageGenerator` executable and automate tasks both locally and on CI:
+Ideally, you want to use the `PackageGenerator` executable to automate tasks both locally and on CI.
+
+You can download a build from the [release page](https://github.com/justeattakeaway/PackageGenerator/releases) or, alternatively, build it from the source code:
 
 ```bash
 swift build -c release --arch x86_64 --arch arm64
