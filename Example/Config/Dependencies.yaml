@@ -1,0 +1,13 @@
+dependencies:
+- name: RemoteDependencyA
+  url: https://github.com/DependencyA
+  version: 1.0.0
+- name: RemoteDependencyB
+  url: https://github.com/DependencyB
+  version: 2.0.0
+- name: RemoteDependencyC
+  url: https://github.com/DependencyC
+  revision: abcde1235kjh
+- name: RemoteDependencyD
+  url: https://github.com/DependencyC
+  branch: master
