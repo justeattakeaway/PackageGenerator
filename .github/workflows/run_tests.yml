@@ -1,0 +1,42 @@
+name: Run tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-tests-macos:
+    name: Run tests (macOS)
+    runs-on: macos-14
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: swift package resolve
+
+      - name: Run tests
+        run: swift test
+
+  run-tests-linux:
+    name: Run tests (Linux)
+    runs-on: ubuntu-20.04
+    container: swift:5.9-jammy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: swift package resolve
+
+      - name: Run tests
+        run: swift test
