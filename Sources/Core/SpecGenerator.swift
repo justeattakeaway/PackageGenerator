@@ -1,90 +1,88 @@
 //  SpecGenerator.swift
 
 import Foundation
+import Yams
 
 /// Class to generate Specs models that can be used to ultimately generate `Package.swift` files.
 final class SpecGenerator {
-    
-    let decoder = JSONDecoder()
+
+    enum GeneratorError: Error {
+        case invalidFormat(String)
+    }
+
+    let specUrl: URL
     let dependenciesUrl: URL
-    let packagesFolder: URL
-    
+
     /// The default initializer.
     ///
     /// - Parameters:
-    ///   - dependenciesUrl: The path  to the RemoteDependencies.json file.
-    ///   - packagesFolder: The path  to the folder containing the packages.
-    init(dependenciesUrl: URL, packagesFolder: URL) {
+    ///   - packagesFolder: Path  to the package spec.
+    ///   - dependenciesUrl: Path  to the dependencies file.
+    init(specUrl: URL, dependenciesUrl: URL) {
+        self.specUrl = specUrl
         self.dependenciesUrl = dependenciesUrl
-        self.packagesFolder = packagesFolder
     }
     
     /// Generate a Spec model for a given package.
     ///
-    /// - Parameter packageName: The name of the package to generate a Spec for.
     /// - Returns: A Spec model.
-    func makeSpec(for packageName: PackageName, specUrl: URL) throws -> Spec {
-        try makeSpec(specUrl: specUrl)
-    }
-    
-    /// Generate Spec models for all packages.
-    ///
-    /// - Returns: An array of Spec models.
-    func makeSpecs() throws -> [Spec] {
-        try specURLs().map(makeSpec)
-    }
-    
-    private func makeSpec(specUrl: URL) throws -> Spec {
-        let dependenciesData = try Data(contentsOf: dependenciesUrl)
-        let specData = try Data(contentsOf: specUrl)
-        
-        let partialSpec = try decoder.decode(Spec.self, from: specData)
-        let dependencies = try decoder.decode(Dependencies.self, from: dependenciesData).dependencies
-        
-        let mappedDependencies: [RemoteDependency] = partialSpec.remoteDependencies.compactMap { remoteDependency -> RemoteDependency? in
-            guard let dependency = dependencies.first(where: { $0.name == remoteDependency.name }) else { return nil }
-            return RemoteDependency(name: dependency.name,
-                                    url: remoteDependency.url ?? dependency.url,
-                                    version: remoteDependency.version ?? dependency.version,
-                                    revision: remoteDependency.revision ?? dependency.revision,
-                                    branch: remoteDependency.branch ?? dependency.branch)
+    func makeSpec() throws -> Spec {
+        let spec: Spec = try decodeModel(from: specUrl)
+        let dependencies: Dependencies = try decodeModel(from: dependenciesUrl)
+
+        let mappedDependencies: [Spec.RemoteDependency] = spec.remoteDependencies
+            .compactMap { remoteDependency -> Spec.RemoteDependency? in
+            guard let dependency = dependencies.dependencies.first(where: {
+                $0.name == remoteDependency.name
+            }) else {
+                return nil
+            }
+                return Spec.RemoteDependency(
+                name: dependency.name,
+                url: remoteDependency.url ?? dependency.url,
+                version: remoteDependency.version ?? dependency.version,
+                revision: remoteDependency.revision ?? dependency.revision,
+                branch: remoteDependency.branch ?? dependency.branch
+            )
         }
         
-        return Spec(name: partialSpec.name,
-                    platforms: partialSpec.platforms,
-                    localDependencies: partialSpec.localDependencies,
-                    remoteDependencies: mappedDependencies,
-                    products: partialSpec.products,
-                    targets: partialSpec.targets,
-                    localBinaryTargets: partialSpec.localBinaryTargets,
-                    remoteBinaryTargets: partialSpec.remoteBinaryTargets,
-                    swiftToolsVersion: partialSpec.swiftToolsVersion,
-                    swiftLanguageVersions: partialSpec.swiftLanguageVersions)
+        return Spec(
+            name: spec.name,
+            platforms: spec.platforms,
+            localDependencies: spec.localDependencies,
+            remoteDependencies: mappedDependencies,
+            products: spec.products,
+            targets: spec.targets,
+            localBinaryTargets: spec.localBinaryTargets,
+            remoteBinaryTargets: spec.remoteBinaryTargets,
+            swiftToolsVersion: spec.swiftToolsVersion,
+            swiftLanguageVersions: spec.swiftLanguageVersions
+        )
     }
-    
-    private func specURL(for packageName: PackageName) -> URL {
-        packagesFolder.appendingPathComponent("\(packageName)/\(packageName).json")
-    }
-    
-    private func specURLs() throws -> [URL] {
-        let fileManager = FileManager.default
-        let contentURLs = try fileManager.contentsOfDirectory(at: packagesFolder,
-                                                              includingPropertiesForKeys: [.nameKey],
-                                                              options: .skipsHiddenFiles)
-        return contentURLs.map { item in
-            let packageName = item.lastPathComponent
-            return item.appendingPathComponent("\(packageName).json")
+
+    private func decodeModel<T: Decodable>(from url: URL) throws -> T {
+        let specData = try Data(contentsOf: url)
+        switch url.pathExtension {
+        case "json":
+            let decoder = JSONDecoder()
+            return try decoder.decode(T.self, from: specData)
+        case "yaml", "yml":
+            let decoder = YAMLDecoder()
+            return try decoder.decode(T.self, from: specData)
+        default:
+            throw GeneratorError.invalidFormat(url.pathExtension)
         }
-        .filter { specUrl in
-            fileManager.fileExists(atPath: specUrl.path)
-        }
-        .sorted()
     }
 }
 
+// move to other file
+
 extension URL: Comparable {
     
-    public static func < (lhs: URL, rhs: URL) -> Bool {
+    public static func < (
+        lhs: URL,
+        rhs: URL
+    ) -> Bool {
         lhs.path < rhs.path
     }
 }
