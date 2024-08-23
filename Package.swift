@@ -12,7 +12,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.1.2"),
         .package(url: "https://github.com/SwiftGen/StencilSwiftKit", from: "2.8.0"),
-        .package(url: "https://github.com/JohnSundell/ShellOut", from: "2.3.0")
+        .package(url: "https://github.com/JohnSundell/ShellOut", from: "2.3.0"),
+        .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.6")
     ],
     targets: [
         .executableTarget(
@@ -21,6 +22,7 @@ let package = Package(
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "ShellOut", package: "ShellOut"),
                 .product(name: "StencilSwiftKit", package: "StencilSwiftKit"),
+                .product(name: "Yams", package: "Yams")
             ],
             path: "Sources"),
         .testTarget(
