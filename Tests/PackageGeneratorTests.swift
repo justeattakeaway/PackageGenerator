@@ -22,7 +22,7 @@ final class PackageGeneratorTests: XCTestCase {
         .appendingPathComponent("Resources")
 
     lazy var packagesFolderUrl = resourcesFolder.appendingPathComponent("Packages")
-    lazy var dependenciesUrl = resourcesFolder.appendingPathComponent("TestRemoteDependencies.json")
+    lazy var dependenciesFilename = "TestDependencies"
     lazy var templatePath = resourcesFolder.appendingPathComponent("Package.stencil")
 
     func test_SingleProduct() throws {
@@ -62,25 +62,30 @@ final class PackageGeneratorTests: XCTestCase {
     }
 
     private func assertPackage(for packageType: PackageType) throws {
-        let specUrl = resourcesFolder
-            .appendingPathComponent("Packages")
-            .appendingPathComponent(packageType.rawValue)
-            .appendingPathComponent(packageType.rawValue)
-            .appendingPathExtension("json")
+        for `extension` in ["json", "yml"] {
+            let specUrl = resourcesFolder
+                .appendingPathComponent("Packages")
+                .appendingPathComponent(packageType.rawValue)
+                .appendingPathComponent(packageType.rawValue)
+                .appendingPathExtension(`extension`)
 
-        let packageUrl = resourcesFolder
-            .appendingPathComponent("Packages")
-            .appendingPathComponent(packageType.rawValue)
-            .appendingPathComponent("\(packageType.rawValue)Package")
-            .appendingPathExtension("swift")
+            let packageUrl = resourcesFolder
+                .appendingPathComponent("Packages")
+                .appendingPathComponent(packageType.rawValue)
+                .appendingPathComponent("Package")
+                .appendingPathExtension("swift")
 
-        let specGenerator = SpecGenerator(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
-        let spec = try specGenerator.makeSpec()
-        let templater = Templater(templatePath: templatePath.absoluteString)
-        let packageContent = try templater.renderTemplate(context: spec.makeContext())
+            let dependenciesUrl = resourcesFolder
+                .appendingPathComponent(dependenciesFilename)
+                .appendingPathExtension("yml")
+            let specGenerator = SpecGenerator(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
+            let spec = try specGenerator.makeSpec()
+            let templater = Templater(templatePath: templatePath.absoluteString)
+            let packageContent = try templater.renderTemplate(context: spec.makeContext())
 
-        let expectedPackageContent = try String(contentsOf: packageUrl)
+            let expectedPackageContent = try String(contentsOf: packageUrl)
 
-        XCTAssertEqual(packageContent, expectedPackageContent)
+            XCTAssertEqual(packageContent, expectedPackageContent)
+        }
     }
 }
