@@ -62,7 +62,7 @@ final class PackageGeneratorTests: XCTestCase {
     }
 
     private func assertPackage(for packageType: PackageType) throws {
-        let packageSpecUrl = resourcesFolder
+        let specUrl = resourcesFolder
             .appendingPathComponent("Packages")
             .appendingPathComponent(packageType.rawValue)
             .appendingPathComponent(packageType.rawValue)
@@ -74,8 +74,8 @@ final class PackageGeneratorTests: XCTestCase {
             .appendingPathComponent("\(packageType.rawValue)Package")
             .appendingPathExtension("swift")
 
-        let specGenerator = SpecGenerator(dependenciesUrl: dependenciesUrl, packagesFolder: packagesFolderUrl)
-        let spec = try specGenerator.makeSpec(for: packageType.rawValue, specUrl: packageSpecUrl)
+        let specGenerator = SpecGenerator(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
+        let spec = try specGenerator.makeSpec()
         let templater = Templater(templatePath: templatePath.absoluteString)
         let packageContent = try templater.renderTemplate(context: spec.makeContext())
 
