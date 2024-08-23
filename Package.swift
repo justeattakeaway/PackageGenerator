@@ -30,7 +30,7 @@ let package = Package(
             dependencies: ["PackageGenerator"],
             path: "Tests",
             resources: [
-                .process("Resources")
+                .copy("Resources")
             ]
         )
     ]
