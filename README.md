@@ -1,5 +1,7 @@
 # PackageGenerator
 
+![Build Status](https://github.com/justeattakeaway/PackageGenerator/actions/workflows/run_tests.yml/badge.svg?branch=main)
+
 A tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages.
 
 
