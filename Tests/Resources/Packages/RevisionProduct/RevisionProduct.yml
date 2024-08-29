@@ -1,0 +1,31 @@
+name: RevisionProduct
+products:
+  - name: RevisionProduct
+    productType: library
+    targets:
+      - TargetA
+localDependencies:
+  - name: LocalDependencyA
+    path: ../LocalDependencies
+remoteDependencies:
+  - name: RemoteDependencyA
+  - name: RemoteDependencyB
+  - name: RemoteDependencyC
+targets:
+  - name: TargetA
+    targetType: target
+    dependencies:
+      - name: LocalDependencyA
+      - name: RemoteDependencyA
+      - name: RemoteDependencyB
+      - name: RemoteDependencyC
+    sourcesPath: Framework/Sources
+    resourcesPath: Resources
+  - name: TargetATests
+    targetType: testTarget
+    dependencies:
+      - name: TargetA
+        isTarget: true
+      - name: RemoteDependencyB
+    sourcesPath: Tests/Sources
+    resourcesPath: Resources

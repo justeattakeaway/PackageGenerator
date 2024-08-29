@@ -15,8 +15,8 @@ final class Writer {
     ///    - packageFolder: The path to the folder containing the package.
     ///  - Returns: The path of the saved `Package.swift` file.
     @discardableResult
-    func writePackageFile(content: String, to packageFolder: String) throws -> Path {
-        let url = URL(fileURLWithPath: packageFolder).appendingPathComponent("Package.swift")
+    func writePackageFile(content: String, to packageFolder: URL) throws -> Path {
+        let url = packageFolder.appendingPathComponent("Package.swift")
         try content.write(to: url, atomically: true, encoding: .utf8)
         try shellOut(to: "chmod 444", arguments: [url.path])
         return url.path

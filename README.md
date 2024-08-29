@@ -2,54 +2,18 @@
 
 ![Build Status](https://github.com/justeattakeaway/PackageGenerator/actions/workflows/run_tests.yml/badge.svg?branch=main)
 
-A tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages.
+A CLI tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages.
 
 
 ## Usage
 
-`PackageGenerator` uses [ArgumentParser](https://github.com/apple/swift-argument-parser) and [Stencil](https://stencil.fuller.li/).
+`PackageGenerator` uses [ArgumentParser](https://github.com/apple/swift-argument-parser) and [Stencil](https://stencil.fuller.li/). The tool provides a single `generate-package` command requiring the following options:
 
-The command `generate-package` requires the following arguments:
+- `--spec`: Path to a package spec file (supported formats: json, yaml)
+- `--dependencies`: Path to a dependencies file (supported formats: json, yaml)
+- `--template`: Path to a template file (supported formats: stencil)
 
-- `path`: Path to the folder containing the packages.
-- `template-path`: Path to the Stencil template.
-- `dependencies-path`: Path to the `RemoteDependencies.json` file.
-
-`RemoteDependencies.json` should contain the list of remote dependencies used by your packages. E.g.
-
-```json
-{
-    "dependencies": [
-        {
-            "name": "Alamofire",
-            "url": "https://github.com/Alamofire/Alamofire",
-            "version": "5.6.1"
-        },
-        {
-            "name": "ViewInspector",
-            "url": "https://github.com/nalexn/ViewInspector",
-            "version": "0.9.2"
-        },
-        {
-            "name": "ViewInspector",
-            "url": "https://github.com/nalexn/ViewInspector",
-            "version": "0.9.2"
-        },
-        {
-            "name": "SnapshotTesting",
-            "url": "https://github.com/pointfreeco/swift-snapshot-testing",
-            "branch": "master"
-        },
-        {
-            "name": "Fastlane",
-            "url": "https://github.com/fastlane/fastlane.git",
-            "revision": "2c4f29fe161c5998e30000f96d23384fd0eebe90"
-        }
-    ]
-}
-```
-
-Packages should be contained in respective folders inside a packages folder and provide a `<package_name>.json` spec. E.g.
+Here are spec examples in both json and yaml:
 
 ```json
 {
@@ -83,11 +47,8 @@ Packages should be contained in respective folders inside a packages folder and 
       "version": "1.2.3"
     },
     {
-      "name": "Fastlane"
-    },
-    {
       "name": "SnapshotTesting"
-    },
+    }
   ],
   "targets": [
     {
@@ -96,9 +57,6 @@ Packages should be contained in respective folders inside a packages folder and 
       "dependencies": [
         {
           "name": "Alamofire"
-        },
-        {
-          "name": "Fastlane"
         }
       ],
       "sourcesPath": "Framework/Sources",
@@ -126,19 +84,98 @@ Packages should be contained in respective folders inside a packages folder and 
 }
 ```
 
-> Note that `PackageGenerator` will automatically retrieve `url` &  ( `version` || `branch` || `revision` ) values for `remoteDependencies` from the `RemoteDependencies.json` file. If you need to override those values, you can set them in the package spec.
+```yaml
+name: Example
+swiftToolsVersion: '5.10'
+swiftLanguageVersions:
+  - '5.10'
+  - '6.0'
+products:
+  - name: Example
+    productType: library
+    targets:
+      - ExampleTarget
+localDependencies:
+  - name: ExampleLocalDependency
+    path: "../LocalDependencies"
+remoteDependencies:
+  - name: Alamofire
+  - name: ViewInspector
+    version: 1.2.3
+  - name: SnapshotTesting
+targets:
+  - name: ExampleTarget
+    targetType: target
+    dependencies:
+      - name: Alamofire
+    sourcesPath: Framework/Sources
+    resourcesPath: Resources
+  - name: ExampleTargetTests
+    targetType: testTarget
+    dependencies:
+      - name: ExampleTarget
+        isTarget: true
+      - name: ViewInspector
+      - name: SnapshotTesting
+    sourcesPath: Tests/Sources
+    resourcesPath: Resources
+```
 
-We provide a default Stencil template that `PackageGenerator` can work with.  
+The dependencies file should contain the list of dependencies used by your package(s):
 
-The command `generate-packages` allows you to generate Package.swift files from a given folder of packages.
-It takes the same arguments as `generate-package` along with `packages-folder-path`. `PackageGenerator` will loop though subfolders and generate Package.swift files from JSON specs.
+```json
+{
+  "dependencies": [
+    {
+      "name": "Alamofire",
+      "url": "https://github.com/Alamofire/Alamofire",
+      "version": "5.6.1"
+    },
+    {
+      "name": "SnapshotTesting",
+      "url": "https://github.com/pointfreeco/swift-snapshot-testing",
+      "branch": "master"
+    },
+    {
+      "name": "ViewInspector",
+      "url": "https://github.com/nalexn/ViewInspector",
+      "revision": "23d6fabc6e8f0115c94ad3af5935300c70e0b7fa"
+    }
+  ]
+}
+```
 
-Ideally, you want to generate a `PackageGenerator` executable and automate tasks both locally and on CI.
+```yaml
+dependencies:
+  - name: Alamofire
+    url: https://github.com/Alamofire/Alamofire
+    version: 5.6.1
+  - name: SnapshotTesting
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    branch: master
+  - name: ViewInspector
+    url: https://github.com/nalexn/ViewInspector
+    revision: 23d6fabc6e8f0115c94ad3af5935300c70e0b7fa
+```
+
+> Note that `PackageGenerator` will automatically retrieve `url` &  ( `version` || `branch` || `revision` ) values for the dependencies. If you need to override those values, you can set them in the package spec.
+
+We provide a default Stencil template we recommend using.  
+
+Ideally, you want to use the `PackageGenerator` executable to automate tasks both locally and on CI.
+
+You can download a build from the [release page](https://github.com/justeattakeaway/PackageGenerator/releases) or, alternatively, build it from the source code:
+
+```bash
+swift build -c release --arch x86_64 --arch arm64
+```
+
+The executable should be generated at `.build/apple/Products/Release/PackageGenerator`.
 
 
 ## Demo
 
-In the `PackageGenerator` scheme, enable 'Use custom working directory' and set the value to the folder containing the `PackageGenerator` package.
+In the `GeneratorPackage` scheme, enable 'Use custom working directory' and set the value to the folder containing the `PackageGenerator` package.
 The scheme has arguments set to showcase the creation of a `Package.swift` file using some provided files.
 
 When running the default scheme you should see a `Package.swift` file being generated in the `Packages/Example/` folder.

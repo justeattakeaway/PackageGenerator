@@ -67,15 +67,15 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--path Example/Packages/Example"
+            argument = "--spec Example/Packages/Example.yaml"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--dependencies-path Example/Config/RemoteDependencies.json"
+            argument = "--dependencies Example/Config/Dependencies.yaml"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--template-path Templates/Package.stencil"
+            argument = "--template Templates/Package.stencil"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
