@@ -43,7 +43,7 @@ struct Spec: Decodable {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.name = try container.decode(String.self, forKey: .name)
             self.url = try container.decodeIfPresent(String.self, forKey: .url)
-            self.ref = (try? Ref(from: decoder)) ?? nil
+            self.ref = try? Ref(from: decoder)
         }
 
         init(name: String, url: String, ref: Ref) {
