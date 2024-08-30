@@ -8,20 +8,13 @@ struct Spec: Decodable {
 
     struct Product: Decodable {
         let name: String
-        let productType: String
+        let productType: ProductType
         let targets: [String]
 
         enum CodingKeys: CodingKey {
             case name
             case productType
             case targets
-        }
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.name = try container.decode(String.self, forKey: .name)
-            self.productType = try container.decode(ProductType.self, forKey: .productType).rawValue
-            self.targets = try container.decode([String].self, forKey: .targets)
         }
     }
 
@@ -39,37 +32,24 @@ struct Spec: Decodable {
     struct RemoteDependency: Decodable {
         let name: String
         let url: String?
-        let version: String?
-        let revision: String?
-        let branch: String?
+        let ref: Ref?
 
         enum CodingKeys: CodingKey {
             case name
             case url
-            case version
-            case revision
-            case branch
         }
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.name = try container.decode(String.self, forKey: .name)
             self.url = try container.decodeIfPresent(String.self, forKey: .url)
-            self.version = try container.decodeIfPresent(String.self, forKey: .version)
-            self.revision = try container.decodeIfPresent(String.self, forKey: .revision)
-            self.branch = try container.decodeIfPresent(String.self, forKey: .branch)
+            self.ref = try? Ref(from: decoder)
         }
 
-        init(name: String, url: String, version: String?, revision: String?, branch: String?) {
-            guard version != nil || revision != nil || branch != nil else {
-                fatalError("You need to provide at least one of the following: version, revision or branch")
-            }
-
+        init(name: String, url: String, ref: Ref) {
             self.name = name
             self.url = url
-            self.version = version
-            self.revision = revision
-            self.branch = branch
+            self.ref = ref
         }
     }
 
@@ -179,23 +159,5 @@ struct Spec: Decodable {
         self.remoteBinaryTargets = remoteBinaryTargets
         self.swiftToolsVersion = swiftToolsVersion
         self.swiftLanguageVersions = swiftLanguageVersions
-    }
-}
-
-extension Spec {
-    func makeContext() -> [String: Any] {
-        let values: [String: Any?] = [
-            "package_name": name,
-            "platforms": platforms,
-            "local_dependencies": localDependencies,
-            "remote_dependencies": remoteDependencies,
-            "products": products,
-            "targets": targets,
-            "local_binary_targets": localBinaryTargets,
-            "remote_binary_targets": remoteBinaryTargets,
-            "swift_tools_version": swiftToolsVersion,
-            "swift_versions": swiftLanguageVersions
-        ]
-        return values.compactMapValues { $0 }
     }
 }

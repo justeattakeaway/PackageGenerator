@@ -9,19 +9,23 @@ struct Dependencies: Decodable {
 struct Dependency: Decodable {
     let name: String
     let url: String
-    let version: String?
-    let revision: String?
-    let branch: String?
+    let ref: Ref
 
-    init(name: String, url: String, version: String?, revision: String?, branch: String?) {
-        guard version != nil || revision != nil || branch != nil else {
-            fatalError("You need to provide at least one of the following: version, revision or branch")
-        }
-        
+    enum CodingKeys: String, CodingKey {
+        case name
+        case url
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.url = try container.decode(String.self, forKey: .url)
+        self.ref = try Ref(from: decoder)
+    }
+
+    init(name: String, url: String, ref: Ref) {
         self.name = name
         self.url = url
-        self.version = version
-        self.revision = revision
-        self.branch = branch
+        self.ref = ref
     }
 }
