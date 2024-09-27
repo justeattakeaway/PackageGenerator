@@ -1,6 +1,7 @@
 //  Spec+Context.swift
 
 import Foundation
+import Semver
 
 extension Spec.Product {
     func makeContext() -> [String: Any] {
@@ -33,6 +34,14 @@ extension Spec.RemoteDependency {
 }
 
 extension Spec {
+    var swiftToolsVersionMajor: Int? {
+        guard let swiftToolsVersionString = swiftToolsVersion else { return nil }
+        if let swiftToolsVersion = try? Semver(string: swiftToolsVersionString) {
+            return Int(swiftToolsVersion.major)
+        }
+        return nil
+    }
+    
     func makeContext() -> [String: Any] {
         let values: [String: Any?] = [
             "package_name": name,
@@ -44,6 +53,7 @@ extension Spec {
             "local_binary_targets": localBinaryTargets,
             "remote_binary_targets": remoteBinaryTargets,
             "swift_tools_version": swiftToolsVersion,
+            "swift_tools_version_major": swiftToolsVersionMajor,
             "swift_versions": swiftLanguageVersions
         ]
         return values.compactMapValues { $0 }
