@@ -1,7 +1,6 @@
 //  Spec+Context.swift
 
 import Foundation
-import Semver
 
 extension Spec.Product {
     func makeContext() -> [String: Any] {
@@ -36,8 +35,8 @@ extension Spec.RemoteDependency {
 extension Spec {
     var swiftToolsVersionMajor: Int? {
         guard let swiftToolsVersionString = swiftToolsVersion else { return nil }
-        if let swiftToolsVersion = try? Semver(string: swiftToolsVersionString) {
-            return Int(swiftToolsVersion.major)
+        if let majorString = swiftToolsVersionString.components(separatedBy: ".").first {
+            return Int(majorString)
         }
         return nil
     }

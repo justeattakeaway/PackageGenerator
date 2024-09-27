@@ -28,15 +28,6 @@
       }
     },
     {
-      "identity" : "semver.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/glwithu06/Semver.swift.git",
-      "state" : {
-        "revision" : "53073d00185c49d5bdedc13e3697f5eb760fc2ad",
-        "version" : "1.2.0"
-      }
-    },
-    {
       "identity" : "shellout",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/JohnSundell/ShellOut",
