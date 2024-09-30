@@ -121,7 +121,15 @@ let package = Package(
 {% endfor %}
 {% if swift_versions %}
     ],
+    {% if swift_tools_version_major %}
+        {% if swift_tools_version_major >= 6 %}
+    swiftLanguageModes: [
+        {% else %}
     swiftLanguageVersions: [
+        {% endif %}
+    {% else %}
+    swiftLanguageVersions: [
+    {% endif %}
     {% for swift_version in swift_versions %}
         .version("{{ swift_version }}"),
     {% endfor %}

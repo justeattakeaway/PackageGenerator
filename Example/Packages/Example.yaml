@@ -2,7 +2,7 @@ name: Example
 platforms:
   - ".iOS(.v15)"
   - ".macOS(.v13)"
-swiftToolsVersion: '5.10'
+swiftToolsVersion: '6.0'
 swiftLanguageVersions:
   - '5.10'
   - '6.0'
