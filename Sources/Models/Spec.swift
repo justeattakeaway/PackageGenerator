@@ -9,13 +9,20 @@ struct Spec: Decodable {
     struct Product: Decodable {
         let name: String
         let productType: ProductType
+        let libraryType: LibraryType?
         let targets: [String]
 
         enum CodingKeys: CodingKey {
             case name
             case productType
+            case libraryType
             case targets
         }
+    }
+
+    enum LibraryType: String, Decodable {
+        case `static`
+        case dynamic
     }
 
     enum ProductType: String, Decodable {

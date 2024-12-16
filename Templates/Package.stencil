@@ -1,6 +1,9 @@
-{% macro addProduct product %}        
+{% macro addProduct product %}
         .{{ product.productType }}(
             name: "{{ product.name }}",
+            {% if product.productType == 'library' %}
+            type: .{{ product.libraryType }},
+            {% endif %}
             targets: {{ product.targets }}
         ),
 {% endmacro %}

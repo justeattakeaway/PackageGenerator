@@ -4,11 +4,15 @@ import Foundation
 
 extension Spec.Product {
     func makeContext() -> [String: Any] {
-        [
+        var retVal: [String: Any] = [
             "name": name,
             "productType": productType.rawValue,
             "targets": targets
         ]
+        if productType == .library {
+            retVal["libraryType"] = libraryType?.rawValue ?? Spec.LibraryType.static.rawValue
+        }
+        return retVal
     }
 }
 
