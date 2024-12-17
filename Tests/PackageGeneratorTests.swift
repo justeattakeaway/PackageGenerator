@@ -78,9 +78,9 @@ final class PackageGeneratorTests: XCTestCase {
             let dependenciesUrl = resourcesFolder
                 .appendingPathComponent(dependenciesFilename)
                 .appendingPathExtension("yml")
-            let specGenerator = SpecGenerator(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
-            let spec = try specGenerator.makeSpec()
-            let templater = Templater(templatePath: templatePath.absoluteString)
+
+            let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
+            let templater = Templater(templateUrl: templatePath)
             let packageContent = try templater.renderTemplate(context: spec.makeContext())
 
             let expectedPackageContent = try String(contentsOf: packageUrl)

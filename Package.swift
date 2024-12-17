@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "PackageGenerator",
-    platforms: [.macOS(.v12)],
+    platforms: [.macOS(.v13)],
     products: [
         .executable(name: "PackageGenerator", targets: ["PackageGenerator"])
     ],
