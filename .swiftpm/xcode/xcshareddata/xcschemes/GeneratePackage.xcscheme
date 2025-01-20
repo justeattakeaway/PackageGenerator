@@ -80,19 +80,23 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--dependencies-as-binary-targets"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--relative-dependencies-path &quot;.xcframeworks&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--hashing-paths Package.swift"
-            isEnabled = "YES">
+            argument = "--version-refs-path Example/Config/VersionRefs.json.lock"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--hashing-paths Source"
-            isEnabled = "YES">
+            argument = "--exclusions Package1ToExclude"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--exclusions Package2ToExclude"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

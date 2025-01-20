@@ -1,0 +1,20 @@
+{
+    "dependencies": [
+        {
+            "name": "RemoteDependencyA",
+            "version": "1.0.0"
+        },
+        {
+            "name": "RemoteDependencyB",
+            "version": "2.0.0"
+        },
+        {
+            "name": "RemoteDependencyC",
+            "revision": "abcde1235kjh"
+        },
+        {
+            "name": "MyFramework",
+            "branch": "master"
+        }
+    ]
+}
