@@ -18,6 +18,8 @@ struct GeneratePackage: AsyncParsableCommand {
     @OptionGroup()
     var cachingFlags: CachingFlags
 
+    private var fileManager: FileManager { .default }
+
     func run() async throws {
         let generator = Generator(
             specUrl: URL(filePath: spec, directoryHint: .notDirectory),
@@ -30,10 +32,12 @@ struct GeneratePackage: AsyncParsableCommand {
                 guard let relativeDependenciesPath = cachingFlags.relativeDependenciesPath else {
                     throw ValidationError("--dependencies-as-binary-targets is set but --relative-dependencies-path is not specified")
                 }
+                guard let versionRefsPath = cachingFlags.versionRefsPath else {
+                    throw ValidationError("--dependencies-as-binary-targets is set but --version-refs-path is not specified")
+                }
                 return .binaryTargets(
                     relativeDependenciesPath: relativeDependenciesPath,
-                    requiredHashingPaths: cachingFlags.requiredHashingPaths,
-                    optionalHashingPaths: cachingFlags.optionalHashingPaths,
+                    versionRefsPath: versionRefsPath,
                     exclusions: cachingFlags.exclusions
                 )
             }
@@ -47,16 +51,19 @@ struct GeneratePackage: AsyncParsableCommand {
             if cachingFlags.relativeDependenciesPath == nil {
                 throw ValidationError("--dependencies-as-binary-targets is set but --relative-dependencies-path is not specified")
             }
-            if cachingFlags.requiredHashingPaths.isEmpty {
-                throw ValidationError("--dependencies-as-binary-targets is set but --required-hashing-paths is not specified")
+            guard let versionRefsPath = cachingFlags.versionRefsPath else {
+                throw ValidationError("--dependencies-as-binary-targets is set but --version-refs-path is not specified")
+            }
+            if fileManager.fileExists(atPath: versionRefsPath) == false {
+                throw ValidationError("The file \(versionRefsPath) does not exist.")
             }
         }
         if !cachingFlags.dependenciesAsBinaryTargets {
             if cachingFlags.relativeDependenciesPath != nil {
                 throw ValidationError("--relative-dependencies-path specified but --dependencies-as-binary-targets is unset")
             }
-            if !cachingFlags.requiredHashingPaths.isEmpty {
-                throw ValidationError("--required-hashing-paths specified but --dependencies-as-binary-targets is unset")
+            if cachingFlags.versionRefsPath != nil {
+                throw ValidationError("--version-refs-path specified but --dependencies-as-binary-targets is unset")
             }
         }
     }

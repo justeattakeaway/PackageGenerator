@@ -6,20 +6,19 @@ final class DependencyFinder {
 
     enum DependencyFinderError: Error, LocalizedError {
         case failedCollectingDependencies(packageUrl: URL)
+        case missingVersionRef(dependency: String)
 
         var errorDescription: String? {
             switch self {
             case .failedCollectingDependencies(let packageUrl):
                 return "Failed collecting dependencies at \(packageUrl.path)"
+            case .missingVersionRef(let dependency):
+                return "Missing versionRef for \(dependency)"
             }
         }
     }
 
     private let fileManager: FileManager
-
-    private lazy var dependencyHasher: DependencyHasher = {
-        DependencyHasher(fileManager: fileManager)
-    }()
 
     // MARK: - Inits
 
@@ -29,7 +28,7 @@ final class DependencyFinder {
 
     // MARK: - Functions
 
-    func findPackageDependencies(at url: URL, requiredHashingPaths: [String], optionalHashingPaths: [String] = []) async throws -> [PackageDependency] {
+    func findPackageDependencies(at url: URL, versionRefsPath: String) async throws -> [PackageDependency] {
         let process = Process()
         process.executableURL = URL(filePath: "/usr/bin/swift", directoryHint: .notDirectory)
         process.arguments = ["package", "show-dependencies", "--format", "json"]
@@ -50,28 +49,27 @@ final class DependencyFinder {
         let packageDescription = try JSONDecoder().decode(PackageSpec.self, from: data)
         return try parseDependencies(
             packageDescription.dependencies,
-            requiredHashingPaths: requiredHashingPaths,
-            optionalHashingPaths: optionalHashingPaths
+            versionRefsPath: versionRefsPath
         )
     }
 
     // MARK: - Helper Functions
 
-    private func parseDependencies(_ dependencies: [DependencySpec], requiredHashingPaths: [String], optionalHashingPaths: [String] = []) throws -> [PackageDependency] {
+    private func parseDependencies(_ dependencies: [DependencySpec], versionRefsPath: String) throws -> [PackageDependency] {
         var result = [PackageDependency]()
+        let dependencyReferences = try loadDependencyReferences(from: versionRefsPath)
 
         for dependency in dependencies {
             if dependency.version == "unspecified" {
-                let url = URL(filePath: dependency.path, directoryHint: .isDirectory)
-                let hash = try dependencyHasher.hashForPackage(
-                    at: url,
-                    requiredSubpaths: requiredHashingPaths,
-                    optionalSubpaths: optionalHashingPaths
-                )
+                guard let versionRef = dependencyReferences.first(where: { dep in
+                    dep.name == dependency.name
+                })?.versionRef else {
+                    throw DependencyFinderError.missingVersionRef(dependency: dependency.name)
+                }
                 result.append(
                     PackageDependency(
                         name: dependency.name,
-                        type: .local(hash: hash)
+                        type: .local(hash: versionRef)
                     )
                 )
             }
@@ -86,13 +84,18 @@ final class DependencyFinder {
 
             let nestedDependencies = try parseDependencies(
                 dependency.dependencies,
-                requiredHashingPaths: requiredHashingPaths,
-                optionalHashingPaths: optionalHashingPaths
+                versionRefsPath: versionRefsPath
             )
             result.append(contentsOf: nestedDependencies)
         }
 
         return Set(result)
             .sorted { $0.name.lowercased() < $1.name.lowercased() }
+    }
+
+    private func loadDependencyReferences(from filePath: String) throws -> [DependencyReference] {
+        let file = URL(filePath: filePath, directoryHint: .notDirectory)
+        let data = try Data(contentsOf: file)
+        return try JSONDecoder().decode(DependenciesFile.self, from: data).dependencies
     }
 }

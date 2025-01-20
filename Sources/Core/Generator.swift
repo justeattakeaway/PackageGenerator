@@ -8,8 +8,7 @@ struct Generator {
         case standard
         case binaryTargets(
             relativeDependenciesPath: String,
-            requiredHashingPaths: [String],
-            optionalHashingPaths: [String],
+            versionRefsPath: String,
             exclusions: [String]
         )
     }
@@ -36,14 +35,13 @@ struct Generator {
         switch dependencyTreatment {
         case .standard:
             break
-        case .binaryTargets(let relativeDependenciesPath, let requiredHashingPaths, let optionalHashingPaths, let exclusions):
+        case .binaryTargets(let relativeDependenciesPath, let versionRefsPath, let exclusions):
             print("✅ Converting \(path) to use dependencies as binary targets.")
             try await convertDependenciesToBinaryTargets(
                 spec: spec,
                 packageFilePath: path,
                 relativeDependenciesPath: relativeDependenciesPath,
-                requiredHashingPaths: requiredHashingPaths,
-                optionalHashingPaths: optionalHashingPaths,
+                versionRefsPath: versionRefsPath,
                 exclusions: exclusions
             )
         }
@@ -55,16 +53,14 @@ struct Generator {
         spec: Spec,
         packageFilePath: String,
         relativeDependenciesPath: String,
-        requiredHashingPaths: [String],
-        optionalHashingPaths: [String],
+        versionRefsPath: String,
         exclusions: [String]
     ) async throws {
         let dependencyFinder = DependencyFinder(fileManager: fileManager)
         let packageLocation = URL(filePath: packageFilePath).deletingLastPathComponent()
         let dependencies = try await dependencyFinder.findPackageDependencies(
             at: packageLocation,
-            requiredHashingPaths: requiredHashingPaths,
-            optionalHashingPaths: optionalHashingPaths
+            versionRefsPath: versionRefsPath
         )
 
         let additionalLocalBinaryTargets: [Spec.LocalBinaryTarget] = dependencies.compactMap { dependency in

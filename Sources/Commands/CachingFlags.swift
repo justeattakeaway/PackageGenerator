@@ -10,12 +10,9 @@ struct CachingFlags: ParsableArguments {
     @Option(name: .long, help: "Path to a folder containing dependencies. Required if --dependencies-as-binary-targets is set.")
     var relativeDependenciesPath: String?
 
-    @Option(name: .long, help: "List of required relative paths to use when generating the hash for local dependencies. Required if --dependencies-as-binary-targets is set.")
-    var requiredHashingPaths: [String] = []
+    @Option(name: .long, help: "Path to a file containing the the version references for the dependencies (either hashes or SemVer versions). Required if --dependencies-as-binary-targets is set.")
+    var versionRefsPath: String?
 
-    @Option(name: .long, help: "List of optional relative paths to use when generating the hash for local dependencies.")
-    var optionalHashingPaths: [String] = []
-
-    @Option(name: .long, help: "List of dependencies to exclude from the list of binary targets.")
+    @Option(name: .long, help: "List of dependencies to exclude from the list of binary targets. Effective only if --dependencies-as-binary-targets is set.")
     var exclusions: [String] = []
 }
