@@ -5,6 +5,19 @@
 A CLI tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages.
 
 
+## Installation
+
+Ideally, you want to use the `PackageGenerator` executable to automate tasks both locally and on CI.
+
+You can download a build from the [release page](https://github.com/justeattakeaway/PackageGenerator/releases) or, alternatively, build it from the source code:
+
+```bash
+swift build -c release --arch x86_64 --arch arm64
+```
+
+The executable should be generated at `.build/apple/Products/Release/PackageGenerator`.
+
+
 ## Usage
 
 `PackageGenerator` uses [ArgumentParser](https://github.com/apple/swift-argument-parser) and [Stencil](https://stencil.fuller.li/). The tool provides a single `generate-package` command requiring the following options:
@@ -162,16 +175,34 @@ dependencies:
 
 We provide a default Stencil template we recommend using.  
 
-Ideally, you want to use the `PackageGenerator` executable to automate tasks both locally and on CI.
+PackageGenerator also supports treating package dependencies as binary targets in the resulting `Package.swift`. This can be useful in cases where local and remote dependencies want to be treated as cached version in the form of XCFrameworks.
 
-You can download a build from the [release page](https://github.com/justeattakeaway/PackageGenerator/releases) or, alternatively, build it from the source code:
+For this scenario, use the following flags/options:
 
-```bash
-swift build -c release --arch x86_64 --arch arm64
+- `--dependencies-as-binary-targets`: flag indicating if local and remote dependencies should be converted to local XCFrameworks
+- `--relative-dependencies-path`: the relative path to the folder containing the XCFrameworks organised by name and version ref (e.g. `DependencyA/1.0.0/DependencyA.xcframework`)
+- `--version-refs-path`: the path to a file containing the version refs for each dependency used by the package. Content is as follows:
+
+```json
+{
+    "dependencies": [
+        {
+            "name": "LocalDependencyA",
+            "versionRef": "someVersionRefForLocalDependencyA"
+        },
+        {
+            "name": "RemoteDependencyA",
+            "versionRef": "someVersionRefForRemoteDependencyA"
+        },
+        {
+            "name": "RemoteDependencyB",
+            "versionRef": "someVersionRefForRemoteDependencyB"
+        }
+    ]
+}
 ```
 
-The executable should be generated at `.build/apple/Products/Release/PackageGenerator`.
-
+- `--exclusions`: list of package names to exclude from the resulting list of binary targets
 
 ## Demo
 
