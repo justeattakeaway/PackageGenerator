@@ -6,15 +6,15 @@ extension Spec {
 
     func cachableSpec(additionalLocalBinaryTargets: [LocalBinaryTarget], exclusions: [String]) -> Spec {
         let products = products.map { product in
-            if product.productType == .library {
-                return Spec.Product.init(
-                    name: product.name,
-                    productType: product.productType,
-                    libraryType: .dynamic,
-                    targets: product.targets
-                )
+            guard product.productType == .library else {
+                return product
             }
-            return product
+            return Spec.Product.init(
+                name: product.name,
+                productType: product.productType,
+                libraryType: .dynamic,
+                targets: product.targets
+            )
         }
 
         let localDependencies = localDependencies.filter { exclusions.contains($0.name) }

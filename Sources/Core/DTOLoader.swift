@@ -3,7 +3,7 @@
 import Foundation
 import Yams
 
-final class DTOLoader {
+struct DTOLoader {
 
     enum GeneratorError: Error {
         case invalidFormat(String)

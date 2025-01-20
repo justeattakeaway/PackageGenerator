@@ -26,9 +26,15 @@ struct PackageConvertor {
 
         let additionalLocalBinaryTargets: [Spec.LocalBinaryTarget] = dependencies.compactMap { dependency in
             if exclusions.contains(dependency.name) { return nil }
+            let localBinaryPath = [
+                relativeDependenciesPath,
+                dependency.name,
+                dependency.revision,
+                "\(dependency.name).xcframework"
+            ].joined(separator: "/")
             return Spec.LocalBinaryTarget(
                 name: dependency.name,
-                path: "\(relativeDependenciesPath)/\(dependency.name)/\(dependency.revision)/\(dependency.name).xcframework"
+                path: localBinaryPath
             )
         }
 

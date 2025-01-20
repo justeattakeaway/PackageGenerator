@@ -56,7 +56,7 @@ final class DependencyFinder: DependencyFinding {
     // MARK: - Helper Functions
 
     private func parseDependencies(_ dependencies: [DependencySpec], versionRefsPath: String) throws -> [PackageDependency] {
-        var result = [PackageDependency]()
+        var result = Set<PackageDependency>()
         let dependencyReferences = try loadDependencyReferences(from: versionRefsPath)
 
         for dependency in dependencies {
@@ -66,7 +66,7 @@ final class DependencyFinder: DependencyFinding {
                 })?.versionRef else {
                     throw DependencyFinderError.missingVersionRef(dependency: dependency.name)
                 }
-                result.append(
+                result.insert(
                     PackageDependency(
                         name: dependency.name,
                         type: .local(hash: versionRef)
@@ -74,7 +74,7 @@ final class DependencyFinder: DependencyFinding {
                 )
             }
             else {
-                result.append(
+                result.insert(
                     PackageDependency(
                         name: dependency.name,
                         type: .remote(tag: dependency.version)
@@ -86,10 +86,10 @@ final class DependencyFinder: DependencyFinding {
                 dependency.dependencies,
                 versionRefsPath: versionRefsPath
             )
-            result.append(contentsOf: nestedDependencies)
+            result.formUnion(nestedDependencies)
         }
 
-        return Set(result)
+        return result
             .sorted { $0.name.lowercased() < $1.name.lowercased() }
     }
 

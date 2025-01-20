@@ -13,9 +13,9 @@ struct Generator {
         )
     }
 
-    private var specUrl: URL
-    private var templateUrl: URL
-    private var dependenciesUrl: URL
+    private let specUrl: URL
+    private let templateUrl: URL
+    private let dependenciesUrl: URL
 
     private let fileManager: FileManager
     
