@@ -16,7 +16,7 @@ concurrency:
 jobs:
   run-tests-macos:
     name: Run tests (macOS)
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,8 +29,8 @@ jobs:
 
   run-tests-linux:
     name: Run tests (Linux)
-    runs-on: ubuntu-20.04
-    container: swift:5.9-jammy
+    runs-on: ubuntu-24.04
+    container: swift:6.0-jammy
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
