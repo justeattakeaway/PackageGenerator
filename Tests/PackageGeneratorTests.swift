@@ -19,7 +19,7 @@ final class PackageGeneratorTests: XCTestCase {
         case dependenciesAsBinaryTargetsWithExclusions = "DependenciesAsBinaryTargetsWithExclusions"
     }
 
-    let resourcesFolder = URL(fileURLWithPath: #file)
+    let resourcesFolder = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent()
         .appendingPathComponent("Resources")
 
