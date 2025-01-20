@@ -1,0 +1,16 @@
+{
+    "dependencies": [
+        {
+            "name": "LocalDependencyA",
+            "versionRef": "someVersionRefForLocalDependencyA"
+        },
+        {
+            "name": "RemoteDependencyA",
+            "versionRef": "someVersionRefForRemoteDependencyA"
+        },
+        {
+            "name": "RemoteDependencyB",
+            "versionRef": "someVersionRefForRemoteDependencyB"
+        }
+    ]
+}

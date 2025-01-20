@@ -37,43 +37,18 @@ struct Generator {
             break
         case .binaryTargets(let relativeDependenciesPath, let versionRefsPath, let exclusions):
             print("✅ Converting \(path) to use dependencies as binary targets.")
-            try await convertDependenciesToBinaryTargets(
+            let packageConvertor = PackageConvertor()
+            let convertedSpec = try await packageConvertor.convertDependenciesToBinaryTargets(
+                dependencyFinder: DependencyFinder(fileManager: fileManager),
                 spec: spec,
                 packageFilePath: path,
                 relativeDependenciesPath: relativeDependenciesPath,
                 versionRefsPath: versionRefsPath,
                 exclusions: exclusions
             )
+            let path = try write(content: try ContentGenerator().content(for: convertedSpec, templateUrl: templateUrl))
+            print("✅ File successfully updated at \(path).")
         }
-    }
-
-    // MARK: - Helper Functions
-
-    private func convertDependenciesToBinaryTargets(
-        spec: Spec,
-        packageFilePath: String,
-        relativeDependenciesPath: String,
-        versionRefsPath: String,
-        exclusions: [String]
-    ) async throws {
-        let dependencyFinder = DependencyFinder(fileManager: fileManager)
-        let packageLocation = URL(filePath: packageFilePath).deletingLastPathComponent()
-        let dependencies = try await dependencyFinder.findPackageDependencies(
-            at: packageLocation,
-            versionRefsPath: versionRefsPath
-        )
-
-        let additionalLocalBinaryTargets: [Spec.LocalBinaryTarget] = dependencies.compactMap { dependency in
-            if exclusions.contains(dependency.name) { return nil }
-            return Spec.LocalBinaryTarget(
-                name: dependency.name,
-                path: "\(relativeDependenciesPath)/\(dependency.name)/\(dependency.revision)/\(dependency.name).xcframework"
-            )
-        }
-
-        let cachableSpec = spec.cachableSpec(additionalLocalBinaryTargets: additionalLocalBinaryTargets, exclusions: exclusions)
-        let path = try write(content: try ContentGenerator().content(for: cachableSpec, templateUrl: templateUrl))
-        print("✅ File successfully updated at \(path).")
     }
 
     private func write(content: Content) throws -> String {

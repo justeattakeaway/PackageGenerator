@@ -2,7 +2,7 @@
 
 import Foundation
 
-final class DependencyFinder {
+final class DependencyFinder: DependencyFinding {
 
     enum DependencyFinderError: Error, LocalizedError {
         case failedCollectingDependencies(packageUrl: URL)
