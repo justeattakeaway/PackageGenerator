@@ -32,7 +32,7 @@ final class DependencyFinder {
         let process = Process()
         process.executableURL = URL(filePath: "/usr/bin/swift", directoryHint: .notDirectory)
         process.arguments = ["package", "show-dependencies", "--format", "json"]
-        process.currentDirectoryURL = url
+        process.currentDirectoryURL = url.absoluteURL
 
         let pipe = Pipe()
         process.standardOutput = pipe
