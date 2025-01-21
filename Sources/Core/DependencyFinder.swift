@@ -60,27 +60,26 @@ final class DependencyFinder: DependencyFinding {
         let dependencyReferences = try loadDependencyReferences(from: versionRefsPath)
 
         for dependency in dependencies {
-            if dependency.version == "unspecified" {
-                guard let versionRef = dependencyReferences.first(where: { dep in
-                    dep.name == dependency.name
-                })?.versionRef else {
-                    throw DependencyFinderError.missingVersionRef(dependency: dependency.name)
+            let type: PackageDependency.PackageDependencyType = try {
+                if dependency.version == "unspecified" {
+                    guard let versionRef = dependencyReferences.first(where: { dep in
+                        dep.name == dependency.name
+                    })?.versionRef else {
+                        throw DependencyFinderError.missingVersionRef(dependency: dependency.name)
+                    }
+                    return .local(hash: versionRef)
                 }
-                result.insert(
-                    PackageDependency(
-                        name: dependency.name,
-                        type: .local(hash: versionRef)
-                    )
+                else {
+                    return .remote(tag: dependency.version)
+                }
+            }()
+
+            result.insert(
+                PackageDependency(
+                    name: dependency.name,
+                    type: type
                 )
-            }
-            else {
-                result.insert(
-                    PackageDependency(
-                        name: dependency.name,
-                        type: .remote(tag: dependency.version)
-                    )
-                )
-            }
+            )
 
             let nestedDependencies = try parseDependencies(
                 dependency.dependencies,
