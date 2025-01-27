@@ -23,11 +23,11 @@ let package = Package(
             path: "../LocalDependencies"
         ),
         .package(
-            url: "https://github.com/DependencyA",
+            url: "https://github.com/RemoteDependencyA",
             exact: "1.0.0"
         ),
         .package(
-            url: "https://github.com/DependencyB",
+            url: "https://github.com/RemoteDependencyB",
             exact: "2.0.0"
         ),
     ],

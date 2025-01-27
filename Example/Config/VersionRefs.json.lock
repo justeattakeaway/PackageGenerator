@@ -2,22 +2,18 @@
     "dependencies": [
         {
             "name": "RemoteDependencyA",
-            "url": "https://github.com/RemoteDependencyA",
             "version": "1.0.0"
         },
         {
             "name": "RemoteDependencyB",
-            "url": "https://github.com/RemoteDependencyB",
             "version": "2.0.0"
         },
         {
             "name": "RemoteDependencyC",
-            "url": "https://github.com/RemoteDependencyC",
             "revision": "abcde1235kjh"
         },
         {
-            "name": "RemoteDependencyD",
-            "url": "https://github.com/RemoteDependencyC",
+            "name": "MyFramework",
             "branch": "master"
         }
     ]

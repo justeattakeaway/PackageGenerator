@@ -10,13 +10,13 @@ typealias Content = String
 /// Class to render Stencil templates.
 final class Templater {
     
-    let templatePath: String
+    let templateUrl: URL
 
     /// The default initializer.
     ///
-    /// - Parameter templatePath: The path to the Stencil template.
-    init(templatePath: String) {
-        self.templatePath = templatePath
+    /// - Parameter templateUrl: The path to the Stencil template.
+    init(templateUrl: URL) {
+        self.templateUrl = templateUrl
     }
     
     /// Render a Stencil template using a given context.
@@ -26,14 +26,14 @@ final class Templater {
     ///  - Returns: A rendered template.
     func renderTemplate(context: [String: Any]) throws -> Content {
         let environment = makeEnvironment()
-        let filename = URL(fileURLWithPath: templatePath).lastPathComponent
+        let filename = templateUrl.lastPathComponent
         return try environment.renderTemplate(name: filename, context: context)
     }
     
     private func makeEnvironment() -> Environment {
         let ext = Extension()
         ext.registerStencilSwiftExtensions()
-        let templateFolder = URL(fileURLWithPath: templatePath).deletingLastPathComponent().path
+        let templateFolder = templateUrl.deletingLastPathComponent().path
         let fsLoader = FileSystemLoader(paths: [PathKit.Path(stringLiteral: templateFolder)])
         var environment = Environment(loader: fsLoader, extensions: [ext])
         environment.trimBehaviour = .smart

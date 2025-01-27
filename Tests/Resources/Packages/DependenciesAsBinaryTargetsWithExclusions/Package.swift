@@ -6,30 +6,18 @@
 import PackageDescription
 
 let package = Package(
-    name: "MultipleProducts",
+    name: "DependenciesAsBinaryTargets",
     defaultLocalization: "en",
     platforms: [.iOS(.v15)],
     products: [
         .library(
-            name: "ProductA",
-            targets: ["TargetA"]
-        ),
-        .library(
-            name: "ProductA",
+            name: "DependenciesAsBinaryTargets",
             targets: ["TargetA"]
         ),
     ],
     dependencies: [
         .package(
-            path: "../LocalDependencies"
-        ),
-        .package(
-            url: "https://github.com/RemoteDependencyA",
-            exact: "1.0.0"
-        ),
-        .package(
-            url: "https://github.com/RemoteDependencyB",
-            exact: "2.0.0"
+            path: "../LocalDependencyA"
         ),
     ],
     targets: [
@@ -37,8 +25,8 @@ let package = Package(
             name: "TargetA",
             dependencies: [
                 .product(name: "LocalDependencyA", package: "LocalDependencyA"),
-                .product(name: "RemoteDependencyA", package: "RemoteDependencyA"),
-                .product(name: "RemoteDependencyB", package: "RemoteDependencyB"),
+                .target(name: "RemoteDependencyA"),
+                .target(name: "RemoteDependencyB"),
             ],
             path: "Framework/Sources",
             resources: [
@@ -51,7 +39,8 @@ let package = Package(
             name: "TargetATests",
             dependencies: [
                 .byName(name: "TargetA"),
-                .product(name: "RemoteDependencyB", package: "RemoteDependencyB"),
+                .target(name: "RemoteDependencyA"),
+                .target(name: "RemoteDependencyB"),
             ],
             path: "Tests/Sources",
             resources: [
@@ -59,6 +48,14 @@ let package = Package(
             ],
             plugins: [
             ]
+        ),
+        .binaryTarget(
+            name: "RemoteDependencyA",
+            path: "../.xcframeworks/RemoteDependencyA/someVersionRefForRemoteDependencyA/RemoteDependencyA.xcframework"
+        ),
+        .binaryTarget(
+            name: "RemoteDependencyB",
+            path: "../.xcframeworks/RemoteDependencyB/someVersionRefForRemoteDependencyB/RemoteDependencyB.xcframework"
         ),
     ]
 )

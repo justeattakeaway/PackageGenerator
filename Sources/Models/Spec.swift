@@ -4,32 +4,39 @@ import Foundation
 
 public typealias PackageName = String
 
-struct Spec: Decodable {
+public struct Spec: Decodable {
 
-    struct Product: Decodable {
+    public struct Product: Decodable {
         let name: String
         let productType: ProductType
+        let libraryType: LibraryType?
         let targets: [String]
 
         enum CodingKeys: CodingKey {
             case name
             case productType
+            case libraryType
             case targets
         }
     }
 
-    enum ProductType: String, Decodable {
+    public enum LibraryType: String, Decodable {
+        case `static`
+        case dynamic
+    }
+
+    public enum ProductType: String, Decodable {
         case library
         case executable
         case plugin
     }
 
-    struct LocalDependency: Decodable {
+    public struct LocalDependency: Decodable {
         let name: String
         let path: String
     }
 
-    struct RemoteDependency: Decodable {
+    public struct RemoteDependency: Decodable {
         let name: String
         let url: String?
         let ref: Ref?
@@ -39,7 +46,7 @@ struct Spec: Decodable {
             case url
         }
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.name = try container.decode(String.self, forKey: .name)
             self.url = try container.decodeIfPresent(String.self, forKey: .url)
@@ -53,14 +60,14 @@ struct Spec: Decodable {
         }
     }
 
-    enum TargetType: String, Decodable {
+    public enum TargetType: String, Decodable {
         case target
         case testTarget
         case executableTarget
         case plugin
     }
 
-    struct Target: Decodable {
+    public struct Target: Decodable {
         let targetType: String
         let name: String
         let dependencies: [TargetDependency]
@@ -88,48 +95,31 @@ struct Spec: Decodable {
             case publicHeadersPath
             case plugins
         }
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.targetType = try container.decode(TargetType.self, forKey: .targetType).rawValue
-            self.name = try container.decode(String.self, forKey: .name)
-            self.dependencies = try container.decode([TargetDependency].self, forKey: .dependencies)
-            self.sourcesPath = try container.decode(String.self, forKey: .sourcesPath)
-            self.resourcesPath = try container.decodeIfPresent(String.self, forKey: .resourcesPath)
-            self.exclude = try container.decodeIfPresent([String].self, forKey: .exclude)
-            self.swiftSettings = try container.decodeIfPresent([String].self, forKey: .swiftSettings)
-            self.cSettings = try container.decodeIfPresent([String].self, forKey: .cSettings)
-            self.cxxSettings = try container.decodeIfPresent([String].self, forKey: .cxxSettings)
-            self.linkerSettings = try container.decodeIfPresent([String].self, forKey: .linkerSettings)
-            self.publicHeadersPath = try container.decodeIfPresent(String.self, forKey: .publicHeadersPath)
-            self.plugins = try container.decodeIfPresent([Plugin].self, forKey: .plugins)
-        }
     }
 
-    struct Plugin: Decodable {
+    public struct Plugin: Decodable {
         let name: String
         let package: String?
     }
 
-    struct TargetDependency: Decodable {
+    public struct TargetDependency: Decodable {
         let name: String
         let package: String?
         let isTarget: Bool?
     }
 
-    struct LocalBinaryTarget: Decodable {
+    public struct LocalBinaryTarget: Decodable {
         let name: String
         let path: String
     }
 
-    struct RemoteBinaryTarget: Decodable {
+    public struct RemoteBinaryTarget: Decodable {
         let name: String
         let url: String
         let checksum: String
     }
     
     let name: PackageName
-    let swiftToolsVersion: String?
     let platforms: [String]?
     let localDependencies: [LocalDependency]
     let remoteDependencies: [RemoteDependency]
@@ -137,27 +127,6 @@ struct Spec: Decodable {
     let targets: [Target]
     let localBinaryTargets: [LocalBinaryTarget]?
     let remoteBinaryTargets: [RemoteBinaryTarget]?
+    let swiftToolsVersion: String?
     let swiftLanguageVersions: [String]?
-    
-    init(name: PackageName,
-         platforms: [String]?,
-         localDependencies: [LocalDependency],
-         remoteDependencies: [RemoteDependency],
-         products: [Product],
-         targets: [Target],
-         localBinaryTargets: [LocalBinaryTarget]? = nil,
-         remoteBinaryTargets: [RemoteBinaryTarget]? = nil,
-         swiftToolsVersion: String? = nil,
-         swiftLanguageVersions: [String]? = nil) {
-        self.name = name
-        self.platforms = platforms
-        self.localDependencies = localDependencies
-        self.remoteDependencies = remoteDependencies
-        self.products = products
-        self.targets = targets
-        self.localBinaryTargets = localBinaryTargets
-        self.remoteBinaryTargets = remoteBinaryTargets
-        self.swiftToolsVersion = swiftToolsVersion
-        self.swiftLanguageVersions = swiftLanguageVersions
-    }
 }

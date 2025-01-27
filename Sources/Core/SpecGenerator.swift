@@ -10,26 +10,16 @@ final class SpecGenerator {
         case invalidFormat(String)
     }
     
-    let specUrl: URL
-    let dependenciesUrl: URL
-    
-    /// The default initializer.
+    /// Generate a Spec model for a given package.
     ///
     /// - Parameters:
     ///   - packagesFolder: Path  to the package spec.
     ///   - dependenciesUrl: Path  to the dependencies file.
-    init(specUrl: URL, dependenciesUrl: URL) {
-        self.specUrl = specUrl
-        self.dependenciesUrl = dependenciesUrl
-    }
-    
-    /// Generate a Spec model for a given package.
-    ///
     /// - Returns: A Spec model.
-    func makeSpec() throws -> Spec {
-        let spec: Spec = try decodeModel(from: specUrl)
-        let dependencies: Dependencies = try decodeModel(from: dependenciesUrl)
-        
+    func makeSpec(specUrl: URL, dependenciesUrl: URL) throws -> Spec {
+        let spec: Spec = try DTOLoader().loadDTO(url: specUrl)
+        let dependencies: Dependencies = try DTOLoader().loadDTO(url: dependenciesUrl)
+
         let mappedDependencies: [Spec.RemoteDependency] = spec.remoteDependencies
             .compactMap { remoteDependency -> Spec.RemoteDependency? in
                 guard let dependency = dependencies.dependencies.first(where: {
@@ -56,31 +46,5 @@ final class SpecGenerator {
             swiftToolsVersion: spec.swiftToolsVersion,
             swiftLanguageVersions: spec.swiftLanguageVersions
         )
-    }
-    
-    private func decodeModel<T: Decodable>(from url: URL) throws -> T {
-        let specData = try Data(contentsOf: url)
-        switch url.pathExtension {
-        case "json":
-            let decoder = JSONDecoder()
-            return try decoder.decode(T.self, from: specData)
-        case "yaml", "yml":
-            let decoder = YAMLDecoder()
-            return try decoder.decode(T.self, from: specData)
-        default:
-            throw GeneratorError.invalidFormat(url.pathExtension)
-        }
-    }
-}
-
-// move to other file
-
-extension URL: Comparable {
-    
-    public static func < (
-        lhs: URL,
-        rhs: URL
-    ) -> Bool {
-        lhs.path < rhs.path
     }
 }
