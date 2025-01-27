@@ -17,8 +17,8 @@ final class SpecGenerator {
     ///   - dependenciesUrl: Path  to the dependencies file.
     /// - Returns: A Spec model.
     func makeSpec(specUrl: URL, dependenciesUrl: URL) throws -> Spec {
-        let spec: Spec = try DTOLoader().loadDto(url: specUrl)
-        let dependencies: Dependencies = try DTOLoader().loadDto(url: dependenciesUrl)
+        let spec: Spec = try DTOLoader().loadDTO(url: specUrl)
+        let dependencies: Dependencies = try DTOLoader().loadDTO(url: dependenciesUrl)
 
         let mappedDependencies: [Spec.RemoteDependency] = spec.remoteDependencies
             .compactMap { remoteDependency -> Spec.RemoteDependency? in

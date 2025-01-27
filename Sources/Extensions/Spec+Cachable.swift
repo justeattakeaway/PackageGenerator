@@ -9,7 +9,7 @@ extension Spec {
             guard product.productType == .library else {
                 return product
             }
-            return Spec.Product.init(
+            return Spec.Product(
                 name: product.name,
                 productType: product.productType,
                 libraryType: .dynamic,

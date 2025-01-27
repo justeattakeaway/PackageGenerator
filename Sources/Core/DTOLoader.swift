@@ -9,7 +9,7 @@ struct DTOLoader {
         case invalidFormat(String)
     }
 
-    func loadDto<T: Decodable>(url: URL) throws -> T {
+    func loadDTO<T: Decodable>(url: URL) throws -> T {
         let data = try Data(contentsOf: url)
         switch url.pathExtension {
         case "json":
