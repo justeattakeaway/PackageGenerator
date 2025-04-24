@@ -13,23 +13,21 @@ struct Generator {
         )
     }
 
-    private let specUrl: URL
     private let templateUrl: URL
     private let dependenciesUrl: URL
 
     private let fileManager: FileManager
     
-    init(specUrl: URL, templateUrl: URL, dependenciesUrl: URL, fileManager: FileManager = .default) {
-        self.specUrl = specUrl
+    init(templateUrl: URL, dependenciesUrl: URL, fileManager: FileManager = .default) {
         self.templateUrl = templateUrl
         self.dependenciesUrl = dependenciesUrl
         self.fileManager = fileManager
     }
 
-    func generatePackage(dependencyTreatment: DependencyTreatment) async throws {
+    func generatePackage(specUrl: URL, dependencyTreatment: DependencyTreatment) async throws {
         let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
-
-        let path = try write(content: try ContentGenerator().content(for: spec, templateUrl: templateUrl))
+        let content = try ContentGenerator().content(for: spec, templateUrl: templateUrl)
+        let path = try Writer().writePackageFile(content: content, to: specUrl.deletingLastPathComponent())
         print("✅ File successfully saved at \(path).")
 
         switch dependencyTreatment {
@@ -46,12 +44,9 @@ struct Generator {
                 versionRefsPath: versionRefsPath,
                 exclusions: exclusions
             )
-            let path = try write(content: try ContentGenerator().content(for: convertedSpec, templateUrl: templateUrl))
+            let content = try ContentGenerator().content(for: convertedSpec, templateUrl: templateUrl)
+            let path = try Writer().writePackageFile(content: content, to: specUrl.deletingLastPathComponent())
             print("✅ File successfully updated at \(path).")
         }
-    }
-
-    private func write(content: Content) throws -> String {
-        try Writer().writePackageFile(content: content, to: specUrl.deletingLastPathComponent())
     }
 }

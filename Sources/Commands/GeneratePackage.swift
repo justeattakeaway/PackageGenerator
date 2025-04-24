@@ -9,7 +9,7 @@ struct GeneratePackage: AsyncParsableCommand {
     @Option(name: .long, help: "Path to a package spec file (supported formats: json, yaml).")
     var spec: String
 
-    @Option(name: .long, help: "Path to s dependencies file (supported formats: json, yaml).")
+    @Option(name: .long, help: "Path to a dependencies file (supported formats: json, yaml).")
     var dependencies: String
 
     @Option(name: .long, help: "Path to a template file (supported formats: stencil).")
@@ -22,9 +22,8 @@ struct GeneratePackage: AsyncParsableCommand {
 
     func run() async throws {
         let generator = Generator(
-            specUrl: URL(filePath: spec, directoryHint: .notDirectory),
             templateUrl: URL(filePath: template, directoryHint: .notDirectory),
-            dependenciesUrl: URL(fileURLWithPath: dependencies, isDirectory: false),
+            dependenciesUrl: URL(filePath: dependencies, directoryHint: .notDirectory),
             fileManager: .default
         )
         let dependencyTreatment: Generator.DependencyTreatment = try {
@@ -43,7 +42,10 @@ struct GeneratePackage: AsyncParsableCommand {
             }
             return .standard
         }()
-        try await generator.generatePackage(dependencyTreatment: dependencyTreatment)
+        try await generator.generatePackage(
+            specUrl:URL( filePath: spec, directoryHint: .notDirectory),
+            dependencyTreatment: dependencyTreatment
+        )
     }
 
     func validate() throws {
