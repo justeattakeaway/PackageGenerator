@@ -24,9 +24,11 @@ final class GeneratorTests: XCTestCase {
         .appendingPathComponent("Resources")
 
     lazy var packagesFolderUrl = resourcesFolder.appendingPathComponent("Packages")
+    lazy var templatesFolderUrl = resourcesFolder.appendingPathComponent("Templates")
+
     lazy var dependenciesFilename = "TestDependencies"
     lazy var versionRefs = "TestVersionRefs"
-    lazy var templateUrl = resourcesFolder.appendingPathComponent("Package.stencil")
+    lazy var templateUrl = templatesFolderUrl.appendingPathComponent("Package.stencil")
 
     private let fileManager = FileManager.default
 
