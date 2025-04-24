@@ -17,6 +17,7 @@ final class GeneratorTests: XCTestCase {
         case plugins = "PluginProduct"
         case dependenciesAsBinaryTargets = "DependenciesAsBinaryTargets"
         case dependenciesAsBinaryTargetsWithExclusions = "DependenciesAsBinaryTargetsWithExclusions"
+        case tuist = "Tuist"
     }
 
     let resourcesFolder = URL(fileURLWithPath: #filePath)
@@ -29,6 +30,7 @@ final class GeneratorTests: XCTestCase {
     lazy var dependenciesFilename = "TestDependencies"
     lazy var versionRefs = "TestVersionRefs"
     lazy var templateUrl = templatesFolderUrl.appendingPathComponent("Package.stencil")
+    lazy var tuistTemplateUrl = templatesFolderUrl.appendingPathComponent("TuistPackage.stencil")
 
     private let fileManager = FileManager.default
 
@@ -74,6 +76,10 @@ final class GeneratorTests: XCTestCase {
 
     func test_dependenciesAsBinaryTargetsWithExclusions() async throws {
         try await assertConvertedPackage(for: .dependenciesAsBinaryTargetsWithExclusions, exclusions: ["LocalDependencyA"])
+    }
+
+    func test_tuist() async throws {
+        try await assertTuistPackage(for: .tuist)
     }
 
     private func assertPackage(for packageType: PackageType) async throws {
@@ -160,5 +166,35 @@ final class GeneratorTests: XCTestCase {
 
             XCTAssertEqual(sutPackageContent, expectedPackageContent)
         }
+    }
+
+    private func assertTuistPackage(for packageType: PackageType) async throws {
+        let fixturePackageUrl = resourcesFolder
+            .appendingPathComponent("Packages")
+            .appendingPathComponent(packageType.rawValue)
+            .appendingPathComponent("Package")
+            .appendingPathExtension("swift")
+
+        let dependenciesUrl = resourcesFolder
+            .appendingPathComponent(dependenciesFilename)
+            .appendingPathExtension("yml")
+
+        let generator = Generator(
+            templateUrl: tuistTemplateUrl,
+            dependenciesUrl: dependenciesUrl,
+            dependencyFinder: MockDependencyFinder(),
+            writer: MockWriter()
+        )
+
+        let sutPackageUrl = try await generator.generateTuistPackage(
+            at: fileManager.temporaryDirectory,
+            modulesPath: "Modules",
+            localModuleLister: MockLocalModuleLister()
+        )
+
+        let sutPackageContent = try String(contentsOf: sutPackageUrl)
+        let expectedPackageContent = try String(contentsOf: fixturePackageUrl)
+
+        XCTAssertEqual(sutPackageContent, expectedPackageContent)
     }
 }
