@@ -24,8 +24,8 @@ struct GeneratePackage: AsyncParsableCommand {
         let generator = Generator(
             templateUrl: URL(filePath: template, directoryHint: .notDirectory),
             dependenciesUrl: URL(filePath: dependencies, directoryHint: .notDirectory),
-            writer: Writer(),
-            fileManager: .default
+            dependencyFinder: DependencyFinder(fileManager: fileManager),
+            writer: Writer()
         )
         let dependencyTreatment: Generator.DependencyTreatment = try {
             if cachingFlags.dependenciesAsBinaryTargets {
@@ -43,8 +43,11 @@ struct GeneratePackage: AsyncParsableCommand {
             }
             return .standard
         }()
+        let specUrl = URL(filePath: spec, directoryHint: .notDirectory)
         try await generator.generatePackage(
-            specUrl:URL( filePath: spec, directoryHint: .notDirectory),
+            at: specUrl.deletingLastPathComponent(),
+            filename: Constants.packageFile,
+            specUrl: specUrl,
             dependencyTreatment: dependencyTreatment
         )
     }

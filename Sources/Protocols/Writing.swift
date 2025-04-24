@@ -2,6 +2,8 @@
 
 import Foundation
 
+typealias Path = URL
+
 protocol Writing {
-    func writePackageFile(content: String, to packageFolder: URL) throws -> Path
+    func write(content: String, folder: URL, filename: String) throws -> Path
 }

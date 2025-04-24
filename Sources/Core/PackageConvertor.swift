@@ -13,12 +13,12 @@ struct PackageConvertor {
     func convertDependenciesToBinaryTargets(
         dependencyFinder: DependencyFinding,
         spec: Spec,
-        packageFilePath: String,
+        packageFileUrl: URL,
         relativeDependenciesPath: String,
         versionRefsPath: String,
         exclusions: [String]
     ) async throws -> Spec {
-        let packageLocation = URL(filePath: packageFilePath).deletingLastPathComponent()
+        let packageLocation = packageFileUrl.deletingLastPathComponent()
         let dependencies = try await dependencyFinder.findPackageDependencies(
             at: packageLocation,
             versionRefsPath: versionRefsPath
