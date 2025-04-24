@@ -16,18 +16,20 @@ struct Generator {
     private let templateUrl: URL
     private let dependenciesUrl: URL
 
+    private let writer: Writing
     private let fileManager: FileManager
     
-    init(templateUrl: URL, dependenciesUrl: URL, fileManager: FileManager = .default) {
+    init(templateUrl: URL, dependenciesUrl: URL, writer: Writing, fileManager: FileManager = .default) {
         self.templateUrl = templateUrl
         self.dependenciesUrl = dependenciesUrl
+        self.writer = writer
         self.fileManager = fileManager
     }
 
     func generatePackage(specUrl: URL, dependencyTreatment: DependencyTreatment) async throws {
         let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
         let content = try ContentGenerator().content(for: spec, templateUrl: templateUrl)
-        let path = try Writer().writePackageFile(content: content, to: specUrl.deletingLastPathComponent())
+        let path = try writer.writePackageFile(content: content, to: specUrl.deletingLastPathComponent())
         print("✅ File successfully saved at \(path).")
 
         switch dependencyTreatment {
@@ -45,7 +47,7 @@ struct Generator {
                 exclusions: exclusions
             )
             let content = try ContentGenerator().content(for: convertedSpec, templateUrl: templateUrl)
-            let path = try Writer().writePackageFile(content: content, to: specUrl.deletingLastPathComponent())
+            let path = try writer.writePackageFile(content: content, to: specUrl.deletingLastPathComponent())
             print("✅ File successfully updated at \(path).")
         }
     }

@@ -6,7 +6,7 @@ import ShellOut
 typealias Path = String
 
 /// Class to write `Package.swift` content to disk.
-final class Writer {
+final class Writer: Writing {
     
     /// Save the generated `Package.swift` file and set its permissions to 444 to avoid accidental modifications.
     ///

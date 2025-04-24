@@ -24,6 +24,7 @@ struct GeneratePackage: AsyncParsableCommand {
         let generator = Generator(
             templateUrl: URL(filePath: template, directoryHint: .notDirectory),
             dependenciesUrl: URL(filePath: dependencies, directoryHint: .notDirectory),
+            writer: Writer(),
             fileManager: .default
         )
         let dependencyTreatment: Generator.DependencyTreatment = try {
