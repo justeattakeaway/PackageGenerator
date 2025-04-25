@@ -13,45 +13,54 @@ struct Generator {
         )
     }
 
-    private let specUrl: URL
     private let templateUrl: URL
     private let dependenciesUrl: URL
+    private let dependencyFinder: DependencyFinding
 
+    private let writer: Writing
     private let fileManager: FileManager
     
-    init(specUrl: URL, templateUrl: URL, dependenciesUrl: URL, fileManager: FileManager = .default) {
-        self.specUrl = specUrl
+    init(templateUrl: URL, dependenciesUrl: URL, dependencyFinder: DependencyFinding, writer: Writing, fileManager: FileManager = .default) {
         self.templateUrl = templateUrl
         self.dependenciesUrl = dependenciesUrl
+        self.dependencyFinder = dependencyFinder
+        self.writer = writer
         self.fileManager = fileManager
     }
 
-    func generatePackage(dependencyTreatment: DependencyTreatment) async throws {
+    @discardableResult
+    func generatePackage(at folder: URL, filename: String, specUrl: URL, dependencyTreatment: DependencyTreatment) async throws -> Path {
         let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
-
-        let path = try write(content: try ContentGenerator().content(for: spec, templateUrl: templateUrl))
+        let content = try ContentGenerator().content(for: spec, templateUrl: templateUrl)
+        let path = try writer.write(
+            content: content,
+            folder: folder,
+            filename: filename
+        )
         print("✅ File successfully saved at \(path).")
 
         switch dependencyTreatment {
         case .standard:
-            break
+            return path
         case .binaryTargets(let relativeDependenciesPath, let versionRefsPath, let exclusions):
             print("✅ Converting \(path) to use dependencies as binary targets.")
             let packageConvertor = PackageConvertor()
             let convertedSpec = try await packageConvertor.convertDependenciesToBinaryTargets(
-                dependencyFinder: DependencyFinder(fileManager: fileManager),
+                dependencyFinder: dependencyFinder,
                 spec: spec,
-                packageFilePath: path,
+                packageFileUrl: path,
                 relativeDependenciesPath: relativeDependenciesPath,
                 versionRefsPath: versionRefsPath,
                 exclusions: exclusions
             )
-            let path = try write(content: try ContentGenerator().content(for: convertedSpec, templateUrl: templateUrl))
+            let content = try ContentGenerator().content(for: convertedSpec, templateUrl: templateUrl)
+            let path = try writer.write(
+                content: content,
+                folder: folder,
+                filename: filename
+            )
             print("✅ File successfully updated at \(path).")
+            return path
         }
-    }
-
-    private func write(content: Content) throws -> String {
-        try Writer().writePackageFile(content: content, to: specUrl.deletingLastPathComponent())
     }
 }

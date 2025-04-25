@@ -9,7 +9,7 @@ struct GeneratePackage: AsyncParsableCommand {
     @Option(name: .long, help: "Path to a package spec file (supported formats: json, yaml).")
     var spec: String
 
-    @Option(name: .long, help: "Path to s dependencies file (supported formats: json, yaml).")
+    @Option(name: .long, help: "Path to a dependencies file (supported formats: json, yaml).")
     var dependencies: String
 
     @Option(name: .long, help: "Path to a template file (supported formats: stencil).")
@@ -22,10 +22,10 @@ struct GeneratePackage: AsyncParsableCommand {
 
     func run() async throws {
         let generator = Generator(
-            specUrl: URL(filePath: spec, directoryHint: .notDirectory),
             templateUrl: URL(filePath: template, directoryHint: .notDirectory),
-            dependenciesUrl: URL(fileURLWithPath: dependencies, isDirectory: false),
-            fileManager: .default
+            dependenciesUrl: URL(filePath: dependencies, directoryHint: .notDirectory),
+            dependencyFinder: DependencyFinder(fileManager: fileManager),
+            writer: Writer()
         )
         let dependencyTreatment: Generator.DependencyTreatment = try {
             if cachingFlags.dependenciesAsBinaryTargets {
@@ -43,7 +43,13 @@ struct GeneratePackage: AsyncParsableCommand {
             }
             return .standard
         }()
-        try await generator.generatePackage(dependencyTreatment: dependencyTreatment)
+        let specUrl = URL(filePath: spec, directoryHint: .notDirectory)
+        try await generator.generatePackage(
+            at: specUrl.deletingLastPathComponent(),
+            filename: Constants.packageFile,
+            specUrl: specUrl,
+            dependencyTreatment: dependencyTreatment
+        )
     }
 
     func validate() throws {
