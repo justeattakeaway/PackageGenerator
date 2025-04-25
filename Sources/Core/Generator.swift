@@ -29,26 +29,26 @@ struct Generator {
     }
 
     @discardableResult
-    func generatePackage(at folder: URL, filename: String, specUrl: URL, dependencyTreatment: DependencyTreatment) async throws -> Path {
+    func generatePackage(at outputUrl: URL, filename: String, specUrl: URL, dependencyTreatment: DependencyTreatment) async throws -> Path {
         let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
         let content = try ContentGenerator().content(for: spec, templateUrl: templateUrl)
-        let path = try writer.write(
+        let outputFilePath = try writer.write(
             content: content,
-            folder: folder,
+            folder: outputUrl,
             filename: filename
         )
-        print("✅ File successfully saved at \(path).")
+        print("✅ File successfully saved at \(outputFilePath.path).")
 
         switch dependencyTreatment {
         case .standard:
-            return path
+            return outputFilePath
         case .binaryTargets(let relativeDependenciesPath, let versionRefsPath, let exclusions):
-            print("✅ Converting \(path) to use dependencies as binary targets.")
+            print("✅ Converting \(outputFilePath) to use dependencies as binary targets.")
             let packageConvertor = PackageConvertor()
             let convertedSpec = try await packageConvertor.convertDependenciesToBinaryTargets(
                 dependencyFinder: dependencyFinder,
                 spec: spec,
-                packageFileUrl: path,
+                packageFileUrl: outputFilePath,
                 relativeDependenciesPath: relativeDependenciesPath,
                 versionRefsPath: versionRefsPath,
                 exclusions: exclusions
@@ -56,11 +56,30 @@ struct Generator {
             let content = try ContentGenerator().content(for: convertedSpec, templateUrl: templateUrl)
             let path = try writer.write(
                 content: content,
-                folder: folder,
+                folder: outputUrl,
                 filename: filename
             )
             print("✅ File successfully updated at \(path).")
             return path
         }
+    }
+
+    @discardableResult
+    func generateTuistPackage(at outputUrl: URL, modulesPath: String, localModuleLister: LocalModuleListing) async throws -> Path {
+        let dependencies: Dependencies = try DTOLoader().loadDTO(url: dependenciesUrl)
+        let localModules = try localModuleLister.listLocalModules(at: modulesPath)
+
+        let content = try ContentGenerator().content(
+            for: dependencies,
+            localModules: localModules,
+            templateUrl: templateUrl
+        )
+        let outputFilePath = try writer.write(
+            content: content,
+            folder: outputUrl,
+            filename: Constants.packageFile
+        )
+        print("✅ File successfully saved at \(outputFilePath.path).")
+        return outputFilePath
     }
 }
