@@ -1,0 +1,38 @@
+{
+    "target_A": [
+        {
+            "name": "LocalDependencyA",
+            "type": "local"
+        },
+        {
+            "name": "LocalDependencyB",
+            "type": "local"
+        },
+        {
+            "name": "RemoteDependencyA",
+            "type": "remote"
+        },
+        {
+            "name": "RemoteDependencyB",
+            "type": "remote"
+        }
+    ],
+    "target_B": [
+        {
+            "name": "LocalDependencyA",
+            "type": "local"
+        },
+        {
+            "name": "LocalDependencyC",
+            "type": "local"
+        },
+        {
+            "name": "RemoteDependencyA",
+            "type": "remote"
+        },
+        {
+            "name": "RemoteDependencyC",
+            "type": "remote"
+        }
+    ]
+}

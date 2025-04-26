@@ -10,13 +10,12 @@ import PackageDescription
 
     let packageSettings = PackageSettings(
         productTypes: [
-            "ModA": .staticFramework,
-            "ModB": .staticFramework,
-            "ModC": .staticFramework,
+            "LocalDependencyA": .staticFramework,
+            "LocalDependencyB": .staticFramework,
+            "LocalDependencyC": .staticFramework,
             "RemoteDependencyA": .staticFramework,
             "RemoteDependencyB": .staticFramework,
-            "RemoteDependencyC": .staticFramework,
-            "RemoteDependencyD": .staticFramework
+            "RemoteDependencyC": .staticFramework
         ]
     )
 #endif
@@ -24,12 +23,11 @@ import PackageDescription
 let package = Package(
     name: "JustEatTakeaway",
     dependencies: [
-        .package(path: "../Modules/ModA"),
-        .package(path: "../Modules/ModB"),
-        .package(path: "../Modules/ModC"),
+        .package(path: "../Modules/LocalDependencyA"),
+        .package(path: "../Modules/LocalDependencyB"),
+        .package(path: "../Modules/LocalDependencyC"),
         .package(url: "https://github.com/RemoteDependencyA", exact: "1.0.0"),
         .package(url: "https://github.com/RemoteDependencyB", exact: "2.0.0"),
-        .package(url: "https://github.com/RemoteDependencyC", revision: "abcde1235kjh"),
-        .package(url: "https://github.com/RemoteDependencyD", branch: "master")
+        .package(url: "https://github.com/RemoteDependencyC", revision: "abcde1235kjh")
     ]
 )

@@ -9,8 +9,8 @@ struct GeneratePackage: AsyncParsableCommand {
     @Option(name: .long, help: "Path to a package spec file (supported formats: json, yaml).")
     var spec: String
 
-    @Option(name: .long, help: "Path to a dependencies file (supported formats: json, yaml).")
-    var dependencies: String
+    @Option(name: .long, help: "Path to a package dependencies file (supported formats: json, yaml).")
+    var packageDependencies: String
 
     @Option(name: .long, help: "Path to a template file (supported formats: stencil).")
     var template: String
@@ -23,9 +23,10 @@ struct GeneratePackage: AsyncParsableCommand {
     func run() async throws {
         let generator = Generator(
             templateUrl: URL(filePath: template, directoryHint: .notDirectory),
-            dependenciesUrl: URL(filePath: dependencies, directoryHint: .notDirectory),
+            packageDependenciesUrl: URL(filePath: packageDependencies, directoryHint: .notDirectory),
             dependencyFinder: DependencyFinder(fileManager: fileManager),
-            writer: Writer()
+            writer: Writer(),
+            fileManager: fileManager
         )
         let dependencyTreatment: Generator.DependencyTreatment = try {
             if cachingFlags.dependenciesAsBinaryTargets {
@@ -53,6 +54,9 @@ struct GeneratePackage: AsyncParsableCommand {
     }
 
     func validate() throws {
+        if fileManager.fileExists(atPath: packageDependencies) == false {
+            throw ValidationError("The file \(packageDependencies) does not exist.")
+        }
         if cachingFlags.dependenciesAsBinaryTargets {
             if cachingFlags.relativeDependenciesPath == nil {
                 throw ValidationError("--dependencies-as-binary-targets is set but --relative-dependencies-path is not specified")

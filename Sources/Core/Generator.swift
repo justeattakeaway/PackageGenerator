@@ -14,15 +14,15 @@ struct Generator {
     }
 
     private let templateUrl: URL
-    private let dependenciesUrl: URL
+    private let packageDependenciesUrl: URL
     private let dependencyFinder: DependencyFinding
 
     private let writer: Writing
     private let fileManager: FileManager
     
-    init(templateUrl: URL, dependenciesUrl: URL, dependencyFinder: DependencyFinding, writer: Writing, fileManager: FileManager = .default) {
+    init(templateUrl: URL, packageDependenciesUrl: URL, dependencyFinder: DependencyFinding, writer: Writing, fileManager: FileManager) {
         self.templateUrl = templateUrl
-        self.dependenciesUrl = dependenciesUrl
+        self.packageDependenciesUrl = packageDependenciesUrl
         self.dependencyFinder = dependencyFinder
         self.writer = writer
         self.fileManager = fileManager
@@ -30,7 +30,7 @@ struct Generator {
 
     @discardableResult
     func generatePackage(at outputUrl: URL, filename: String, specUrl: URL, dependencyTreatment: DependencyTreatment) async throws -> Path {
-        let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: dependenciesUrl)
+        let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: packageDependenciesUrl)
         let content = try ContentGenerator().content(for: spec, templateUrl: templateUrl)
         let outputFilePath = try writer.write(
             content: content,
@@ -65,14 +65,15 @@ struct Generator {
     }
 
     @discardableResult
-    func generateTuistPackage(at outputUrl: URL, modulesPath: String, localModuleLister: LocalModuleListing) async throws -> Path {
-        let dependencies: Dependencies = try DTOLoader().loadDTO(url: dependenciesUrl)
-        let localModules = try localModuleLister.listLocalModules(at: modulesPath)
+    func generateTuistPackage(at outputUrl: URL, targetDependenciesUrl: URL, modulesRelativePath: String) async throws -> Path {
+        let packageDependencies: Dependencies = try DTOLoader().loadDTO(url: packageDependenciesUrl)
+        let targetDependencies: TargetDependencies = try DTOLoader().loadDTO(url: targetDependenciesUrl)
 
         let content = try ContentGenerator().content(
-            for: dependencies,
-            localModules: localModules,
-            templateUrl: templateUrl
+            packageDependencies: packageDependencies,
+            targetDependencies: targetDependencies,
+            templateUrl: templateUrl,
+            modulesRelativePath: modulesRelativePath
         )
         let outputFilePath = try writer.write(
             content: content,
