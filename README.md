@@ -2,7 +2,7 @@
 
 ![Build Status](https://github.com/justeattakeaway/PackageGenerator/actions/workflows/run_tests.yml/badge.svg?branch=main)
 
-A CLI tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages. The CLI also support the generation of `Tuist/Package.swift` files to handle external dependencies (see [Tuist documentation](https://docs.tuist.dev/en/guides/develop/projects/dependencies)).
+A CLI tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages. The CLI also supports the generation of `Tuist/Package.swift` files to handle external dependencies (see [Tuist documentation](https://docs.tuist.dev/en/guides/develop/projects/dependencies)).
 
 
 ## Installation
