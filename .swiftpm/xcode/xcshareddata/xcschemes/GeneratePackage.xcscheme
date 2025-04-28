@@ -71,7 +71,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--dependencies Example/Config/Dependencies.yaml"
+            argument = "--package-dependencies Example/Config/Dependencies.yaml"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

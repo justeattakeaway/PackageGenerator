@@ -2,7 +2,7 @@
 
 ![Build Status](https://github.com/justeattakeaway/PackageGenerator/actions/workflows/run_tests.yml/badge.svg?branch=main)
 
-A CLI tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages.
+A CLI tool to generate `Package.swift` files using a custom DSL allowing version alignment of dependencies across packages. The CLI also supports the generation of `Tuist/Package.swift` files to handle external dependencies (see [Tuist documentation](https://docs.tuist.dev/en/guides/develop/projects/dependencies)).
 
 
 ## Installation
@@ -20,11 +20,35 @@ The executable should be generated at `.build/apple/Products/Release/PackageGene
 
 ## Usage
 
-`PackageGenerator` uses [ArgumentParser](https://github.com/apple/swift-argument-parser) and [Stencil](https://stencil.fuller.li/). The tool provides a single `generate-package` command requiring the following options:
+`PackageGenerator` uses [ArgumentParser](https://github.com/apple/swift-argument-parser) and [Stencil](https://stencil.fuller.li/).
+
+The tool provides two commands:
+
+1. `generate-package` with the following options:
 
 - `--spec`: Path to a package spec file (supported formats: json, yaml)
-- `--dependencies`: Path to a dependencies file (supported formats: json, yaml)
+- `--package-dependencies`: Path to a package dependencies file (supported formats: json, yaml)
 - `--template`: Path to a template file (supported formats: stencil)
+
+2. `generate-tuist-package` with the following options:
+
+- `--package-dependencies`: Path to a package dependencies file (supported formats: json, yaml)
+- `--target-dependencies`: Path to a target dependencies file (supported formats: json, yaml)
+- `--template`: Path to a template file (supported formats: stencil)
+- `--modules-relative-path`: Path to a folder containing the modules in individual folders (default to 'Modules'). Relative to the root of the repository. Required if targetDependencies contains local dependencies.
+- `--output`: Path to the output folder (default to 'Tuist').
+
+
+### Generation of standard Package.swift
+
+Example of invocation:
+
+```
+PackageGenerator generate-package \
+--spec Example/Packages/Example.yaml \
+--dependencies Example/Config/Dependencies.yaml \
+--template Templates/Package.stencil
+```
 
 Here are spec examples in both json and yaml:
 
@@ -134,7 +158,7 @@ targets:
     resourcesPath: Resources
 ```
 
-The dependencies file should contain the list of dependencies used by your package(s):
+The package dependencies file should contain the list of dependencies used by your package(s):
 
 ```json
 {
@@ -203,6 +227,86 @@ For this scenario, use the following flags/options:
 ```
 
 - `--exclusions`: list of package names to exclude from the resulting list of binary targets
+
+
+### Generation of Tuist Package.swift
+
+Example of invocation:
+
+```
+PackageGenerator generate-tuist-package \
+--package-dependencies Example/Config/PackageDependencies.yml \
+--target-dependencies Example/Config/TargetDependencies.yml \
+--template Templates/TuistPackage.stencil \
+--modules-relative-path /path/to/project/Modules \
+--output /path/to/project/Tuist
+```
+
+The `Tuist/Package.swift` file used by Tuist is used to fetch dependencies to be used in projects. For this reason, a Target dependencies file listing the dependencies of the project's targets is required, in addition to a Package dependencies files.
+
+Here are examples in both json and yaml:
+
+```json
+{
+    "target_A": [
+        {
+            "name": "LocalDependencyA",
+            "type": "local"
+        },
+        {
+            "name": "LocalDependencyB",
+            "type": "local"
+        },
+        {
+            "name": "RemoteDependencyA",
+            "type": "remote"
+        },
+        {
+            "name": "RemoteDependencyB",
+            "type": "remote"
+        }
+    ],
+    "target_B": [
+        {
+            "name": "LocalDependencyA",
+            "type": "local"
+        },
+        {
+            "name": "LocalDependencyC",
+            "type": "local"
+        },
+        {
+            "name": "RemoteDependencyA",
+            "type": "remote"
+        },
+        {
+            "name": "RemoteDependencyC",
+            "type": "remote"
+        }
+    ]
+}
+```
+
+```yaml
+target_A:
+  - name: LocalDependencyA
+    type: local
+  - name: LocalDependencyB
+    type: local
+  - name: RemoteDependencyA
+    type: remote
+  - name: RemoteDependencyB
+    type: remote
+target_B:
+  - name: LocalDependencyA
+    type: local
+  - name: LocalDependencyC
+    type: local
+  - name: RemoteDependencyA
+    type: remote
+  - name: RemoteDependencyC
+    type: remote
+```
 
 ## Demo
 

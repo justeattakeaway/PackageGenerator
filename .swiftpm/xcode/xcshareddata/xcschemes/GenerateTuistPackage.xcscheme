@@ -67,11 +67,23 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--dependencies Example/Config/Dependencies.yaml"
+            argument = "--package-dependencies Example/Config/PackageDependencies.yml"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--target-dependencies Example/Config/TargetDependencies.yml"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--template Templates/TuistPackage.stencil"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--modules-relative-path Modules"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--output Tuist"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

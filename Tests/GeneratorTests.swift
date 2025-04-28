@@ -5,6 +5,11 @@ import XCTest
 
 final class GeneratorTests: XCTestCase {
 
+    enum SupportedFormat: String, CaseIterable {
+        case json
+        case yml
+    }
+
     enum PackageType: String {
         case revisionProduct = "RevisionProduct"
         case branchProduct = "BranchProduct"
@@ -24,10 +29,12 @@ final class GeneratorTests: XCTestCase {
         .deletingLastPathComponent()
         .appendingPathComponent("Resources")
 
+    lazy var fixturesFolderUrl = resourcesFolder.appendingPathComponent("Fixtures")
     lazy var packagesFolderUrl = resourcesFolder.appendingPathComponent("Packages")
     lazy var templatesFolderUrl = resourcesFolder.appendingPathComponent("Templates")
 
-    lazy var dependenciesFilename = "TestDependencies"
+    lazy var packageDependenciesFilename = "TestPackageDependencies"
+    lazy var targetDependenciesFilename = "TestTargetDependencies"
     lazy var versionRefs = "TestVersionRefs"
     lazy var templateUrl = templatesFolderUrl.appendingPathComponent("Package.stencil")
     lazy var tuistTemplateUrl = templatesFolderUrl.appendingPathComponent("TuistPackage.stencil")
@@ -83,28 +90,27 @@ final class GeneratorTests: XCTestCase {
     }
 
     private func assertPackage(for packageType: PackageType) async throws {
-        for `extension` in ["json", "yml"] {
-            let specUrl = resourcesFolder
-                .appendingPathComponent("Packages")
+        for format in SupportedFormat.allCases {
+            let specUrl = packagesFolderUrl
                 .appendingPathComponent(packageType.rawValue)
                 .appendingPathComponent(packageType.rawValue)
-                .appendingPathExtension(`extension`)
+                .appendingPathExtension(format.rawValue)
 
-            let fixturePackageUrl = resourcesFolder
-                .appendingPathComponent("Packages")
+            let packageUrl = packagesFolderUrl
                 .appendingPathComponent(packageType.rawValue)
                 .appendingPathComponent("Package")
                 .appendingPathExtension("swift")
 
-            let dependenciesUrl = resourcesFolder
-                .appendingPathComponent(dependenciesFilename)
+            let packageDependenciesUrl = fixturesFolderUrl
+                .appendingPathComponent(packageDependenciesFilename)
                 .appendingPathExtension("yml")
 
             let generator = Generator(
                 templateUrl: templateUrl,
-                dependenciesUrl: dependenciesUrl,
+                packageDependenciesUrl: packageDependenciesUrl,
                 dependencyFinder: MockDependencyFinder(),
-                writer: MockWriter()
+                writer: MockWriter(),
+                fileManager: fileManager
             )
 
             let sutPackageUrl = try await generator.generatePackage(
@@ -115,39 +121,38 @@ final class GeneratorTests: XCTestCase {
             )
 
             let sutPackageContent = try String(contentsOf: sutPackageUrl)
-            let expectedPackageContent = try String(contentsOf: fixturePackageUrl)
+            let expectedPackageContent = try String(contentsOf: packageUrl)
 
             XCTAssertEqual(sutPackageContent, expectedPackageContent)
         }
     }
 
     private func assertConvertedPackage(for packageType: PackageType, exclusions: [String]) async throws {
-        for `extension` in ["json", "yml"] {
-            let specUrl = resourcesFolder
-                .appendingPathComponent("Packages")
+        for format in SupportedFormat.allCases {
+            let specUrl = packagesFolderUrl
                 .appendingPathComponent(packageType.rawValue)
                 .appendingPathComponent(packageType.rawValue)
-                .appendingPathExtension(`extension`)
+                .appendingPathExtension(format.rawValue)
 
-            let fixturePackageUrl = resourcesFolder
-                .appendingPathComponent("Packages")
+            let packageUrl = packagesFolderUrl
                 .appendingPathComponent(packageType.rawValue)
                 .appendingPathComponent("Package")
                 .appendingPathExtension("swift")
 
-            let dependenciesUrl = resourcesFolder
-                .appendingPathComponent(dependenciesFilename)
+            let packageDependenciesUrl = fixturesFolderUrl
+                .appendingPathComponent(packageDependenciesFilename)
                 .appendingPathExtension("yml")
 
-            let versionRefsUrl = resourcesFolder
+            let versionRefsUrl = fixturesFolderUrl
                 .appendingPathComponent(versionRefs)
                 .appendingPathExtension("json")
 
             let generator = Generator(
                 templateUrl: templateUrl,
-                dependenciesUrl: dependenciesUrl,
+                packageDependenciesUrl: packageDependenciesUrl,
                 dependencyFinder: MockDependencyFinder(),
-                writer: MockWriter()
+                writer: MockWriter(),
+                fileManager: fileManager
             )
 
             let sutPackageUrl = try await generator.generatePackage(
@@ -162,39 +167,45 @@ final class GeneratorTests: XCTestCase {
             )
 
             let sutPackageContent = try String(contentsOf: sutPackageUrl)
-            let expectedPackageContent = try String(contentsOf: fixturePackageUrl)
+            let expectedPackageContent = try String(contentsOf: packageUrl)
 
             XCTAssertEqual(sutPackageContent, expectedPackageContent)
         }
     }
 
     private func assertTuistPackage(for packageType: PackageType) async throws {
-        let fixturePackageUrl = resourcesFolder
-            .appendingPathComponent("Packages")
-            .appendingPathComponent(packageType.rawValue)
-            .appendingPathComponent("Package")
-            .appendingPathExtension("swift")
+        for format in SupportedFormat.allCases {
+            let fixturePackageUrl = packagesFolderUrl
+                .appendingPathComponent(packageType.rawValue)
+                .appendingPathComponent("Package")
+                .appendingPathExtension("swift")
 
-        let dependenciesUrl = resourcesFolder
-            .appendingPathComponent(dependenciesFilename)
-            .appendingPathExtension("yml")
+            let packageDependenciesUrl = fixturesFolderUrl
+                .appendingPathComponent(packageDependenciesFilename)
+                .appendingPathExtension(format.rawValue)
 
-        let generator = Generator(
-            templateUrl: tuistTemplateUrl,
-            dependenciesUrl: dependenciesUrl,
-            dependencyFinder: MockDependencyFinder(),
-            writer: MockWriter()
-        )
+            let targetDependenciesUrl = fixturesFolderUrl
+                .appendingPathComponent(targetDependenciesFilename)
+                .appendingPathExtension(format.rawValue)
 
-        let sutPackageUrl = try await generator.generateTuistPackage(
-            at: fileManager.temporaryDirectory,
-            modulesPath: "Modules",
-            localModuleLister: MockLocalModuleLister()
-        )
+            let generator = Generator(
+                templateUrl: tuistTemplateUrl,
+                packageDependenciesUrl: packageDependenciesUrl,
+                dependencyFinder: MockDependencyFinder(),
+                writer: MockWriter(),
+                fileManager: fileManager
+            )
 
-        let sutPackageContent = try String(contentsOf: sutPackageUrl)
-        let expectedPackageContent = try String(contentsOf: fixturePackageUrl)
+            let sutPackageUrl = try await generator.generateTuistPackage(
+                at: fileManager.temporaryDirectory,
+                targetDependenciesUrl: targetDependenciesUrl,
+                modulesRelativePath: "Modules"
+            )
 
-        XCTAssertEqual(sutPackageContent, expectedPackageContent)
+            let sutPackageContent = try String(contentsOf: sutPackageUrl)
+            let expectedPackageContent = try String(contentsOf: fixturePackageUrl)
+
+            XCTAssertEqual(sutPackageContent, expectedPackageContent)
+        }
     }
 }
