@@ -18,6 +18,9 @@ struct GeneratePackage: AsyncParsableCommand {
     @OptionGroup()
     var cachingFlags: CachingFlags
 
+    @Option(name: .long, help: "Allowed shared local dependencies. Can be specified multiple times.")
+    var allowedSharedLocalDependencies: [String] = []
+    
     private var fileManager: FileManager { .default }
 
     func run() async throws {
@@ -75,6 +78,13 @@ struct GeneratePackage: AsyncParsableCommand {
             if cachingFlags.versionRefsPath != nil {
                 throw ValidationError("--version-refs-path specified but --dependencies-as-binary-targets is unset")
             }
+        }
+        if !allowedSharedLocalDependencies.isEmpty {
+            let specUrl = URL(filePath: spec, directoryHint: .notDirectory)
+            let packageDependenciesUrl = URL(filePath: packageDependencies, directoryHint: .notDirectory)
+            let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: packageDependenciesUrl)
+            let validator = DependenciesValidator(allowedSharedLocalDependencies: allowedSharedLocalDependencies)
+            try validator.validateSharedLocalDependencies(spec)
         }
     }
 }
