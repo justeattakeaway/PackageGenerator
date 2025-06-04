@@ -11,6 +11,10 @@ struct DependenciesValidator {
         self.allowedSharedLocalDependencies = Set(allowedSharedLocalDependencies)
     }
     
+    /// Validates that all local dependencies of the given spec are allowed shared local dependencies.
+    ///
+    /// - Parameter spec: The `Spec` instance whose local dependencies will be validated.
+    /// - Throws: `DependenciesValidatorError.disallowedSharedLocalDependency` if a local dependency is not in the allowed list.
     func validateSharedLocalDependencies(_ spec: Spec) throws {
         for dependency in spec.localDependencies {
             guard allowedSharedLocalDependencies.contains(dependency.name) else {
