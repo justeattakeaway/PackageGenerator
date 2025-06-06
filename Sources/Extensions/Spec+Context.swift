@@ -20,7 +20,8 @@ extension Spec.RemoteDependency {
     func makeContext() -> [String: Any] {
         var retVal = [
             "name": name,
-            "url": url
+            "url": url,
+            "identifier": identifier
         ]
         if let ref {
             switch ref {

@@ -30,7 +30,10 @@ let package = Package(
         {% endif %}
         {% endfor %}
         {% for dependency in remote_dependencies %}
-        {% if dependency.version %}
+        {% if dependency.identifier %}
+        .package(id: "{{ dependency.identifier }}", exact: "{{ dependency.version }}"){% if not forloop.last %},
+        {% endif %}
+        {% elif dependency.version %}
         .package(url: "{{ dependency.url }}", exact: "{{ dependency.version }}"){% if not forloop.last %},
         {% endif %}
         {% elif dependency.revision %}
