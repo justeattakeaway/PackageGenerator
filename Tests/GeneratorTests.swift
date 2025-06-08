@@ -20,6 +20,7 @@ final class GeneratorTests: XCTestCase {
         case complexTargets = "ComplexTargets"
         case executableProduct = "ExecutableProduct"
         case plugins = "PluginProduct"
+        case registry = "Registry"
         case dependenciesAsBinaryTargets = "DependenciesAsBinaryTargets"
         case dependenciesAsBinaryTargetsWithExclusions = "DependenciesAsBinaryTargetsWithExclusions"
         case tuist = "Tuist"
@@ -75,6 +76,10 @@ final class GeneratorTests: XCTestCase {
 
     func test_pluginProduct() async throws {
         try await assertPackage(for: .plugins)
+    }
+
+    func test_registry() async throws {
+        try await assertPackage(for: .registry)
     }
 
     func test_dependenciesAsBinaryTargets() async throws {
