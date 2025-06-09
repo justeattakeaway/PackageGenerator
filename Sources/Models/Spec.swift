@@ -39,23 +39,27 @@ public struct Spec: Decodable {
     public struct RemoteDependency: Decodable {
         let name: String
         let url: String?
+        let identifier: String?
         let ref: Ref?
 
         enum CodingKeys: CodingKey {
             case name
             case url
+            case identifier
         }
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.name = try container.decode(String.self, forKey: .name)
             self.url = try container.decodeIfPresent(String.self, forKey: .url)
+            self.identifier = try container.decodeIfPresent(String.self, forKey: .identifier)
             self.ref = try? Ref(from: decoder)
         }
 
-        init(name: String, url: String, ref: Ref) {
+        init(name: String, url: String, identifier: String?, ref: Ref) {
             self.name = name
             self.url = url
+            self.identifier = identifier
             self.ref = ref
         }
     }
@@ -105,6 +109,7 @@ public struct Spec: Decodable {
     public struct TargetDependency: Decodable {
         let name: String
         let package: String?
+        let dependency: String?
         let isTarget: Bool?
     }
 

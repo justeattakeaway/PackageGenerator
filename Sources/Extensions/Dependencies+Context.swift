@@ -10,6 +10,10 @@ extension Dependencies {
                 "url": dependency.url
             ]
 
+            if let identifier = dependency.identifier {
+                dict["identifier"] = identifier
+            }
+
             switch dependency.ref {
             case .version(let value):
                 dict["version"] = value

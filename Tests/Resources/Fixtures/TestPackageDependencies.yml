@@ -11,3 +11,7 @@ dependencies:
   - name: RemoteDependencyD
     url: https://github.com/RemoteDependencyD
     branch: master
+  - name: RemoteDependencyE
+    identifier: acme.RemoteDependencyE
+    url: https://github.com/RemoteDependencyE
+    version: 3.0.0

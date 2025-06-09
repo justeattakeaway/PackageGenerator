@@ -18,7 +18,7 @@ struct ContentGenerator {
                 }
             }
         let remoteTargetDependencies = targetDependencies.dependencies
-            .filter { $0.type == .remote }
+            .filter { $0.type == .remote || $0.type == .registry }
             .reduce(into: [TargetDependency]()) { result, element in
                 if !result.contains(element) {
                     result.append(element)

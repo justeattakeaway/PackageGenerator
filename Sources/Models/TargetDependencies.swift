@@ -11,6 +11,7 @@ public enum TargetDependencyType: String, Codable, Equatable {
     case target
     case plugin
     case xcframework
+    case registry
 }
 
 public struct TargetDependency: Decodable, Equatable {
