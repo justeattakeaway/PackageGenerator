@@ -20,7 +20,8 @@ final class GeneratorTests: XCTestCase {
         case complexTargets = "ComplexTargets"
         case executableProduct = "ExecutableProduct"
         case plugins = "PluginProduct"
-        case registry = "Registry"
+        case registryDisabled = "RegistryDisabled"
+        case registryEnabled = "RegistryEnabled"
         case dependenciesAsBinaryTargets = "DependenciesAsBinaryTargets"
         case dependenciesAsBinaryTargetsWithExclusions = "DependenciesAsBinaryTargetsWithExclusions"
         case tuist = "Tuist"
@@ -78,8 +79,12 @@ final class GeneratorTests: XCTestCase {
         try await assertPackage(for: .plugins)
     }
 
-    func test_registry() async throws {
-        try await assertPackage(for: .registry)
+    func test_registry_useRegistryFalse() async throws {
+        try await assertPackage(for: .registryDisabled, useRegistry: false)
+    }
+
+    func test_registry_useRegistryTrue() async throws {
+        try await assertPackage(for: .registryEnabled, useRegistry: true)
     }
 
     func test_dependenciesAsBinaryTargets() async throws {
@@ -94,7 +99,7 @@ final class GeneratorTests: XCTestCase {
         try await assertTuistPackage(for: .tuist)
     }
 
-    private func assertPackage(for packageType: PackageType) async throws {
+    private func assertPackage(for packageType: PackageType, useRegistry: Bool = false) async throws {
         for format in SupportedFormat.allCases {
             let specUrl = packagesFolderUrl
                 .appendingPathComponent(packageType.rawValue)
@@ -122,7 +127,8 @@ final class GeneratorTests: XCTestCase {
                 at: fileManager.temporaryDirectory,
                 filename: "Package.swift",
                 specUrl: specUrl,
-                dependencyTreatment: .standard
+                dependencyTreatment: .standard,
+                useRegistry: useRegistry
             )
 
             let sutPackageContent = try String(contentsOf: sutPackageUrl)
@@ -168,7 +174,8 @@ final class GeneratorTests: XCTestCase {
                     relativeDependenciesPath: "../.xcframeworks",
                     versionRefsPath: versionRefsUrl.path(),
                     exclusions: exclusions
-                )
+                ),
+                useRegistry: false
             )
 
             let sutPackageContent = try String(contentsOf: sutPackageUrl)
@@ -204,7 +211,8 @@ final class GeneratorTests: XCTestCase {
             let sutPackageUrl = try await generator.generateTuistPackage(
                 at: fileManager.temporaryDirectory,
                 targetDependenciesUrl: targetDependenciesUrl,
-                modulesRelativePath: "Modules"
+                modulesRelativePath: "Modules",
+                useRegistry: false
             )
 
             let sutPackageContent = try String(contentsOf: sutPackageUrl)

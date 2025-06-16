@@ -15,8 +15,9 @@ final class SpecGenerator {
     /// - Parameters:
     ///   - packagesFolder: Path  to the package spec.
     ///   - dependenciesUrl: Path  to the dependencies file.
+    ///   - useRegistry: Whether to use a Swift Registry.
     /// - Returns: A Spec model.
-    func makeSpec(specUrl: URL, dependenciesUrl: URL) throws -> Spec {
+    func makeSpec(specUrl: URL, dependenciesUrl: URL, useRegistry: Bool) throws -> Spec {
         let spec: Spec = try DTOLoader().loadDTO(url: specUrl)
         let dependencies: Dependencies = try DTOLoader().loadDTO(url: dependenciesUrl)
 
@@ -40,9 +41,15 @@ final class SpecGenerator {
             .compactMap { target -> Spec.Target in
                 let mappedDependencies = target.dependencies
                     .compactMap { dependency -> Spec.TargetDependency in
-                        let package = dependencies.dependencies.first(where: {
-                            $0.name == dependency.dependency
-                        })?.identifier ?? dependency.package
+                        let package = {
+                            if useRegistry {
+                                dependencies.dependencies.first(where: {
+                                    $0.name == dependency.dependency
+                                })?.identifier ?? dependency.package
+                            } else {
+                                dependency.package
+                            }
+                        }()
                         return Spec.TargetDependency(
                             name: dependency.name,
                             package: package,

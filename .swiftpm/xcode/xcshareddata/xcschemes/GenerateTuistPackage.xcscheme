@@ -83,6 +83,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "--use-swift-registry"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "--output Tuist"
             isEnabled = "YES">
          </CommandLineArgument>

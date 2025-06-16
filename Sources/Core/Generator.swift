@@ -29,9 +29,17 @@ struct Generator {
     }
 
     @discardableResult
-    func generatePackage(at outputUrl: URL, filename: String, specUrl: URL, dependencyTreatment: DependencyTreatment) async throws -> Path {
-        let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: packageDependenciesUrl)
-        let content = try ContentGenerator().content(for: spec, templateUrl: templateUrl)
+    func generatePackage(at outputUrl: URL, filename: String, specUrl: URL, dependencyTreatment: DependencyTreatment, useRegistry: Bool) async throws -> Path {
+        let spec = try SpecGenerator().makeSpec(
+            specUrl: specUrl,
+            dependenciesUrl: packageDependenciesUrl,
+            useRegistry: useRegistry
+        )
+        let content = try ContentGenerator().content(
+            for: spec,
+            templateUrl: templateUrl,
+            useRegistry: useRegistry
+        )
         let outputFilePath = try writer.write(
             content: content,
             folder: outputUrl,
@@ -53,7 +61,11 @@ struct Generator {
                 versionRefsPath: versionRefsPath,
                 exclusions: exclusions
             )
-            let content = try ContentGenerator().content(for: convertedSpec, templateUrl: templateUrl)
+            let content = try ContentGenerator().content(
+                for: convertedSpec,
+                templateUrl: templateUrl,
+                useRegistry: useRegistry
+            )
             let path = try writer.write(
                 content: content,
                 folder: outputUrl,
@@ -65,7 +77,12 @@ struct Generator {
     }
 
     @discardableResult
-    func generateTuistPackage(at outputUrl: URL, targetDependenciesUrl: URL, modulesRelativePath: String) async throws -> Path {
+    func generateTuistPackage(
+        at outputUrl: URL,
+        targetDependenciesUrl: URL,
+        modulesRelativePath: String,
+        useRegistry: Bool
+    ) async throws -> Path {
         let packageDependencies: Dependencies = try DTOLoader().loadDTO(url: packageDependenciesUrl)
         let targetDependencies: TargetDependencies = try DTOLoader().loadDTO(url: targetDependenciesUrl)
 
@@ -73,7 +90,8 @@ struct Generator {
             packageDependencies: packageDependencies,
             targetDependencies: targetDependencies,
             templateUrl: templateUrl,
-            modulesRelativePath: modulesRelativePath
+            modulesRelativePath: modulesRelativePath,
+            useRegistry: useRegistry
         )
         let outputFilePath = try writer.write(
             content: content,

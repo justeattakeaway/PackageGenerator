@@ -79,6 +79,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "--use-swift-registry"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "--dependencies-as-binary-targets"
             isEnabled = "NO">
          </CommandLineArgument>
