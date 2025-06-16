@@ -18,6 +18,9 @@ struct GenerateTuistPackage: AsyncParsableCommand {
     @Option(name: .long, help: "Path to a template file (supported formats: stencil).")
     var template: String
 
+    @Flag(name: .long, help: "Whether to use a Swift Registry.")
+    var useSwiftRegistry: Bool = false
+
     @Option(name: .long, help: "Path to a folder containing the modules in individual folders (default to 'Modules'). Relative to the root of the repository. Required if targetDependencies contains local dependencies.")
     var modulesRelativePath: String = "Modules"
 
@@ -37,7 +40,8 @@ struct GenerateTuistPackage: AsyncParsableCommand {
         try await generator.generateTuistPackage(
             at: outputPath,
             targetDependenciesUrl: targetDependenciesUrl,
-            modulesRelativePath: modulesRelativePath
+            modulesRelativePath: modulesRelativePath,
+            useRegistry: useSwiftRegistry
         )
     }
 

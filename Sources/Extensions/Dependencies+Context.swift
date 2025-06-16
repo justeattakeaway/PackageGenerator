@@ -3,14 +3,14 @@
 import Foundation
 
 extension Dependencies {
-    func makeContext() -> [String: Any] {
+    func makeContext(useRegistry: Bool) -> [String: Any] {
         let remoteDependencies = self.dependencies.map { dependency in
             var dict: [String: String] = [
                 "name": dependency.name,
                 "url": dependency.url
             ]
 
-            if let identifier = dependency.identifier {
+            if useRegistry, let identifier = dependency.identifier {
                 dict["identifier"] = identifier
             }
 

@@ -15,6 +15,9 @@ struct GeneratePackage: AsyncParsableCommand {
     @Option(name: .long, help: "Path to a template file (supported formats: stencil).")
     var template: String
 
+    @Flag(name: .long, help: "Whether to use a Swift Registry.")
+    var useSwiftRegistry: Bool = false
+
     @OptionGroup()
     var cachingFlags: CachingFlags
 
@@ -52,7 +55,8 @@ struct GeneratePackage: AsyncParsableCommand {
             at: specUrl.deletingLastPathComponent(),
             filename: Constants.packageFile,
             specUrl: specUrl,
-            dependencyTreatment: dependencyTreatment
+            dependencyTreatment: dependencyTreatment,
+            useRegistry: useSwiftRegistry
         )
     }
 
@@ -82,7 +86,7 @@ struct GeneratePackage: AsyncParsableCommand {
         if !allowedSharedLocalDependencies.isEmpty {
             let specUrl = URL(filePath: spec, directoryHint: .notDirectory)
             let packageDependenciesUrl = URL(filePath: packageDependencies, directoryHint: .notDirectory)
-            let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: packageDependenciesUrl)
+            let spec = try SpecGenerator().makeSpec(specUrl: specUrl, dependenciesUrl: packageDependenciesUrl, useRegistry: useSwiftRegistry)
             let validator = DependenciesValidator(allowedSharedLocalDependencies: allowedSharedLocalDependencies)
             try validator.validateSharedLocalDependencies(spec)
         }

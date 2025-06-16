@@ -17,12 +17,16 @@ extension Spec.Product {
 }
 
 extension Spec.RemoteDependency {
-    func makeContext() -> [String: Any] {
+    func makeContext(useRegistry: Bool) -> [String: Any] {
         var retVal = [
             "name": name,
-            "url": url,
-            "identifier": identifier
+            "url": url
         ]
+
+        if useRegistry {
+            retVal["identifier"] = identifier
+        }
+
         if let ref {
             switch ref {
             case .branch(let value):
@@ -46,12 +50,12 @@ extension Spec {
         return nil
     }
     
-    func makeContext() -> [String: Any] {
+    func makeContext(useRegistry: Bool) -> [String: Any] {
         let values: [String: Any?] = [
             "package_name": name,
             "platforms": platforms,
             "local_dependencies": localDependencies,
-            "remote_dependencies": remoteDependencies.map { $0.makeContext() },
+            "remote_dependencies": remoteDependencies.map { $0.makeContext(useRegistry: useRegistry) },
             "products": products.map { $0.makeContext() },
             "targets": targets,
             "local_binary_targets": localBinaryTargets,

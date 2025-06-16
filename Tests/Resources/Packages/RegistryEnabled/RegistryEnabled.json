@@ -1,0 +1,56 @@
+{
+  "name": "Registry",
+  "products": [
+    {
+      "name": "Registry",
+      "productType": "library",
+      "targets": [
+        "TargetA"
+      ]
+    }
+  ],
+  "localDependencies": [
+    {
+      "name": "LocalDependencyA",
+      "path": "../LocalDependencies"
+    }
+  ],
+  "remoteDependencies": [
+    {
+      "name": "RemoteDependencyE"
+    }
+  ],
+  "targets": [
+    {
+      "name": "TargetA",
+      "targetType": "target",
+      "dependencies": [
+        {
+          "name": "LocalDependencyA"
+        },
+        {
+          "name": "RemoteDependencyE_SDK",
+          "dependency": "RemoteDependencyE"
+        }
+      ],
+      "sourcesPath": "Framework/Sources",
+      "resourcesPath": "Resources"
+    },
+    {
+      "name": "TargetATests",
+      "targetType": "testTarget",
+      "dependencies": [
+        {
+          "name": "TargetA",
+          "isTarget": true
+        },
+        {
+          "name": "RemoteDependencyE_SDK",
+          "dependency": "RemoteDependencyE"
+        }
+      ],
+      "sourcesPath": "Tests/Sources",
+      "resourcesPath": "Resources"
+    }
+  ]
+}

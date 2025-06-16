@@ -4,12 +4,18 @@ import Foundation
 
 struct ContentGenerator {
 
-    func content(for spec: Spec, templateUrl: URL) throws -> Content {
+    func content(for spec: Spec, templateUrl: URL, useRegistry: Bool) throws -> Content {
         let templater = Templater(templateUrl: templateUrl)
-        return try templater.renderTemplate(context: spec.makeContext())
+        return try templater.renderTemplate(context: spec.makeContext(useRegistry: useRegistry))
     }
 
-    func content(packageDependencies: Dependencies, targetDependencies: TargetDependencies, templateUrl: URL, modulesRelativePath: String) throws -> Content {
+    func content(
+        packageDependencies: Dependencies,
+        targetDependencies: TargetDependencies,
+        templateUrl: URL,
+        modulesRelativePath: String,
+        useRegistry: Bool
+    ) throws -> Content {
         let localTargetDependencies = targetDependencies.dependencies
             .filter { $0.type == .local }
             .reduce(into: [TargetDependency]()) { result, element in
@@ -29,7 +35,7 @@ struct ContentGenerator {
             .map { localTargetDependency in
                 let localModule: [String: String] = [
                     "name": localTargetDependency.name,
-                    // the ../ is needed as Package.swift is meant ot be in the Tuist folder
+                    // the ../ is needed as Package.swift is meant to be in the Tuist folder
                     "path": "../\(modulesRelativePath)/\(localTargetDependency.name)"
                 ]
                 return localModule
@@ -51,7 +57,7 @@ struct ContentGenerator {
                     .isEmpty
             })
 
-        var final = Dependencies(dependencies: filteredDependencies).makeContext()
+        var final = Dependencies(dependencies: filteredDependencies).makeContext(useRegistry: useRegistry)
         final["local_modules"] = localModulesDicts
 
         let templater = Templater(templateUrl: templateUrl)
