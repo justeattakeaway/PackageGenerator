@@ -24,6 +24,9 @@ struct GenerateTuistPackage: AsyncParsableCommand {
     @Option(name: .long, help: "Path to a folder containing the modules in individual folders (default to 'Modules'). Relative to the root of the repository. Required if targetDependencies contains local dependencies.")
     var modulesRelativePath: String = "Modules"
 
+    @Flag(name: .long, help: "Suppress output.")
+    var quiet: Bool = false
+
     private var fileManager: FileManager { .default }
 
     func run() async throws {
@@ -32,7 +35,8 @@ struct GenerateTuistPackage: AsyncParsableCommand {
             packageDependenciesUrl: URL(filePath: packageDependencies, directoryHint: .notDirectory),
             dependencyFinder: DependencyFinder(fileManager: fileManager),
             writer: Writer(),
-            fileManager: fileManager
+            fileManager: fileManager,
+            quiet: quiet
         )
         let outputPath = URL(filePath: output, directoryHint: .notDirectory)
         let targetDependenciesUrl = URL(filePath: targetDependencies, directoryHint: .notDirectory)
