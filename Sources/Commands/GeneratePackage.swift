@@ -23,6 +23,9 @@ struct GeneratePackage: AsyncParsableCommand {
 
     @Option(name: .long, help: "Allowed shared local dependencies. Can be specified multiple times.")
     var allowedSharedLocalDependencies: [String] = []
+
+    @Flag(name: .long, help: "Suppress output.")
+    var quiet: Bool = false
     
     private var fileManager: FileManager { .default }
 
@@ -32,7 +35,8 @@ struct GeneratePackage: AsyncParsableCommand {
             packageDependenciesUrl: URL(filePath: packageDependencies, directoryHint: .notDirectory),
             dependencyFinder: DependencyFinder(fileManager: fileManager),
             writer: Writer(),
-            fileManager: fileManager
+            fileManager: fileManager,
+            quiet: quiet
         )
         let dependencyTreatment: Generator.DependencyTreatment = try {
             if cachingFlags.dependenciesAsBinaryTargets {

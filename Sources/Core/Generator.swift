@@ -19,13 +19,15 @@ struct Generator {
 
     private let writer: Writing
     private let fileManager: FileManager
-    
-    init(templateUrl: URL, packageDependenciesUrl: URL, dependencyFinder: DependencyFinding, writer: Writing, fileManager: FileManager) {
+    private let printer: Printer
+
+    init(templateUrl: URL, packageDependenciesUrl: URL, dependencyFinder: DependencyFinding, writer: Writing, fileManager: FileManager, quiet: Bool = false) {
         self.templateUrl = templateUrl
         self.packageDependenciesUrl = packageDependenciesUrl
         self.dependencyFinder = dependencyFinder
         self.writer = writer
         self.fileManager = fileManager
+        self.printer = Printer(quiet: quiet)
     }
 
     @discardableResult
@@ -45,13 +47,13 @@ struct Generator {
             folder: outputUrl,
             filename: filename
         )
-        print("✅ File successfully saved at \(outputFilePath.path).")
+        printer.print("✅ File successfully saved at \(outputFilePath.path).")
 
         switch dependencyTreatment {
         case .standard:
             return outputFilePath
         case .binaryTargets(let relativeDependenciesPath, let versionRefsPath, let exclusions):
-            print("✅ Converting \(outputFilePath) to use dependencies as binary targets.")
+            printer.print("✅ Converting \(outputFilePath) to use dependencies as binary targets.")
             let packageConvertor = PackageConvertor()
             let convertedSpec = try await packageConvertor.convertDependenciesToBinaryTargets(
                 dependencyFinder: dependencyFinder,
@@ -71,7 +73,7 @@ struct Generator {
                 folder: outputUrl,
                 filename: filename
             )
-            print("✅ File successfully updated at \(path).")
+            printer.print("✅ File successfully updated at \(path).")
             return path
         }
     }
@@ -98,7 +100,7 @@ struct Generator {
             folder: outputUrl,
             filename: Constants.packageFile
         )
-        print("✅ File successfully saved at \(outputFilePath.path).")
+        printer.print("✅ File successfully saved at \(outputFilePath.path).")
         return outputFilePath
     }
 }
